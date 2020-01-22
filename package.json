@@ -21,5 +21,6 @@
   },
   "dependencies": {
     "read-package-json-fast": "^1.1.3"
-  }
+  },
+  "files": ["lib/**/*.js"]
 }
