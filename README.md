@@ -36,7 +36,7 @@ runScript({
   // but leaves it as 'pipe' for install scripts that run in parallel.
   stdio: 'inherit',
 })
-  .then(({ code, signal, stdout, stderr, package, path, event, script }) => {
+  .then(({ code, signal, stdout, stderr, pkgid, path, event, script }) => {
     // do something with the results
   })
   .catch(er => {
@@ -47,7 +47,7 @@ runScript({
     // - stdout
     // - stderr
     // - path
-    // - package (name@version string)
+    // - pkgid (name@version string)
     // - event
     // - script
   })

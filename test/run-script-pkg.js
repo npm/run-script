@@ -40,7 +40,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
 }, {
   event: 'foo',
   script: 'bar',
-  package: 'foo@1.2.3',
+  pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
 
@@ -70,7 +70,7 @@ t.test('pkg has foo script', t => runScriptPkg({
 }, {
   event: 'foo',
   script: 'bar',
-  package: 'foo@1.2.3',
+  pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
 
@@ -101,6 +101,6 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
 }, {
   event: 'foo',
   script: 'bar "a" "b" "c"',
-  package: 'foo@1.2.3',
+  pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
