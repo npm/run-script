@@ -1,0 +1,25 @@
+{
+  "name": "@npmcli/run-script",
+  "version": "0.0.0",
+  "description": "Run a lifecycle script for a package (descendant of npm-lifecycle)",
+  "author": "Isaac Z. Schlueter <i@izs.me> (https://izs.me)",
+  "license": "ISC",
+  "scripts": {
+    "test": "tap",
+    "preversion": "npm test",
+    "postversion": "npm publish",
+    "prepublishOnly": "git push origin --follow-tags"
+  },
+  "tap": {
+    "check-coverage": true,
+    "coverage-map": "map.js"
+  },
+  "devDependencies": {
+    "minipass": "^3.1.1",
+    "require-inject": "^1.4.4",
+    "tap": "^14.10.6"
+  },
+  "dependencies": {
+    "read-package-json-fast": "^1.1.3"
+  }
+}
