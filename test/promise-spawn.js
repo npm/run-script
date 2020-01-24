@@ -2,6 +2,7 @@ const t = require('tap')
 const requireInject = require('require-inject')
 const Minipass = require('minipass')
 const EE = require('events')
+const fs = require('fs')
 
 class MockProc extends EE {
   constructor (cmd, args, opts) {
@@ -63,6 +64,10 @@ class MockProc extends EE {
         this.writeOut('not ok :(')
         this.writeErr('Some kind of helpful error')
         return this.exit(1)
+      case 'whoami':
+        this.writeOut(`UID ${this.opts.uid}\n`)
+        this.writeOut(`GID ${this.opts.gid}\n`)
+        return this.exit(0)
     }
   }
 }
@@ -126,3 +131,33 @@ t.test('signal', t => t.rejects(promiseSpawn('signal', [], {}, {a: 1}), {
   stderr: Buffer.from('stderr'),
   a: 1,
 }))
+
+t.test('infer ownership', t => {
+  const {lstat} = fs
+  t.teardown(() => fs.lstat = lstat)
+  fs.lstat = (path, cb) => cb(null, { uid: 420, gid: 69 })
+  const getuid = process.getuid
+  t.teardown(() => process.getuid = getuid)
+
+  t.test('as non-root, do not change uid/gid, regardless of arguments', t => {
+    process.getuid = () => 1234
+    return t.resolveMatch(promiseSpawn('whoami', [], { uid: 4321, gid: 9876 }), {
+      code: 0,
+      signal: null,
+      stdout: Buffer.from('UID undefined\nGID undefined\n'),
+      stderr: Buffer.alloc(0),
+    })
+  })
+
+  t.test('as root, change uid/gid to folder, regardless of arguments', t => {
+    process.getuid = () => 0
+    return t.resolveMatch(promiseSpawn('whoami', [], { uid: 4321, gid: 9876 }), {
+      code: 0,
+      signal: null,
+      stdout: Buffer.from('UID 420\nGID 69\n'),
+      stderr: Buffer.alloc(0),
+    })
+  })
+
+  t.end()
+})
