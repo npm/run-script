@@ -16,7 +16,6 @@ if (isWindows) {
    path: require('path').win32,
   })
   const expect = [
-    require('path').win32.resolve(__dirname, '../lib/node-gyp-bin'),
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\b\\node_modules\\.bin',
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\node_modules\\.bin',
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\.bin',
@@ -25,6 +24,7 @@ if (isWindows) {
     'c:\\x\\y\\node_modules\\.bin',
     'c:\\x\\node_modules\\.bin',
     'c:\\node_modules\\.bin',
+    require('path').win32.resolve(__dirname, '../lib/node-gyp-bin'),
     'c:\\usr\\local\\bin',
     'c:\\usr\\local\\sbin',
     'c:\\usr\\bin',
@@ -52,7 +52,6 @@ if (isWindows) {
   }), {
     foo: 'bar',
     PATH:
-      require('path').resolve(__dirname, '../lib/node-gyp-bin') + ':' +
       '/x/y/z/node_modules/a/node_modules/b/node_modules/.bin:' +
       '/x/y/z/node_modules/a/node_modules/node_modules/.bin:' +
       '/x/y/z/node_modules/a/node_modules/.bin:' +
@@ -61,6 +60,7 @@ if (isWindows) {
       '/x/y/node_modules/.bin:' +
       '/x/node_modules/.bin:' +
       '/node_modules/.bin:' +
+      require('path').resolve(__dirname, '../lib/node-gyp-bin') + ':' +
       '/usr/local/bin:' +
       '/usr/local/sbin:' +
       '/usr/bin:' +
