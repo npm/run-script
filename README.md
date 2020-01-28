@@ -17,6 +17,10 @@ runScript({
   // optional, defaults to /bin/sh on unix, or cmd.exe on windows
   scriptShell: '/bin/bash',
 
+  // optional, defaults to false
+  // return stdout and stderr as strings rather than buffers
+  stdioString: true,
+
   // optional, additional environment variables to add
   // note that process.env IS inherited by default
   // Always set:
@@ -65,8 +69,8 @@ Rejected errors are decorated with the same values as the result object.
 
 - `code` Process exit code
 - `signal` Process exit signal
-- `stdout` Buffer of stdout data
-- `stderr` Buffer of stderr data
+- `stdout` stdout data (Buffer, or String when `stdioString` set to true)
+- `stderr` stderr data (Buffer, or String when `stdioString` set to true)
 - `path` Path to the package executing its script
 - `event` Lifecycle event being run
 - `script` Command being run
@@ -91,6 +95,8 @@ Rejected errors are decorated with the same values as the result object.
   the result/error object.
 - `cmd` Optional.  Override the script from the `package.json` with
   something else, which will be run in an otherwise matching environment.
+- `stdioString` Optional, defaults to `false`.  Return string values for
+  `stderr` and `stdout` rather than Buffers.
 
 Note that this does _not_ run pre-event and post-event scripts.  The
 caller has to manage that process themselves.

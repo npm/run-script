@@ -82,18 +82,18 @@ t.test('not found', t => t.rejects(promiseSpawn('not found', [], {}), {
   message: 'command not found',
 }))
 
-t.test('not found, with extra', t => t.rejects(promiseSpawn('not found', [], {}, {a: 1}), {
+t.test('not found, with extra', t => t.rejects(promiseSpawn('not found', [], {stdioString: true}, {a: 1}), {
   message: 'command not found',
-  stdout: Buffer.alloc(0),
-  stderr: Buffer.alloc(0),
+  stdout: '',
+  stderr: '',
   a: 1,
 }))
 
-t.test('pass', t => t.resolveMatch(promiseSpawn('pass', [], {}, {a: 1}), {
+t.test('pass', t => t.resolveMatch(promiseSpawn('pass', [], {stdioString: true}, {a: 1}), {
   code: 0,
   signal: null,
-  stdout: Buffer.from('OK :)'),
-  stderr: Buffer.alloc(0),
+  stdout: 'OK :)',
+  stderr: '',
   a: 1,
 }))
 

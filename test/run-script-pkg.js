@@ -29,6 +29,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
     scripts: {},
   },
 }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
+  stdioString: false,
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
@@ -59,6 +60,7 @@ t.test('pkg has foo script', t => runScriptPkg({
     },
   },
 }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
+  stdioString: false,
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
@@ -90,6 +92,7 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
   },
   args: ['a', 'b', 'c'],
 }).then(res => t.strictSame(res, ['sh', ['-c', 'bar "a" "b" "c"'], {
+  stdioString: false,
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
