@@ -29,7 +29,8 @@ if (isWindows) {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script'
+          npm_lifecycle_script: 'script',
+          npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
         },
         stdio: undefined,
         cwd: 'path',

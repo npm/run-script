@@ -1,6 +1,7 @@
 const t = require('tap')
 const requireInject = require('require-inject')
 const isWindows = require('../lib/is-windows.js')
+const which = require('which').sync
 
 if (!process.env.__FAKE_TESTING_PLATFORM__) {
   const fake = isWindows ? 'posix' : 'win32'
@@ -15,6 +16,7 @@ if (isWindows) {
    path: require('path').win32,
   })
   const expect = [
+    require('path').win32.resolve(__dirname, '../lib/node-gyp-bin'),
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\b\\node_modules\\.bin',
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\node_modules\\.bin',
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\.bin',
@@ -49,7 +51,9 @@ if (isWindows) {
     PATH: '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin',
   }), {
     foo: 'bar',
-    PATH: '/x/y/z/node_modules/a/node_modules/b/node_modules/.bin:' +
+    PATH:
+      require('path').resolve(__dirname, '../lib/node-gyp-bin') + ':' +
+      '/x/y/z/node_modules/a/node_modules/b/node_modules/.bin:' +
       '/x/y/z/node_modules/a/node_modules/node_modules/.bin:' +
       '/x/y/z/node_modules/a/node_modules/.bin:' +
       '/x/y/z/node_modules/node_modules/.bin:' +
