@@ -25,7 +25,8 @@
     "read-package-json-fast": "^1.1.3"
   },
   "files": [
-    "lib/**/*.js"
+    "lib/**/*.js",
+    "lib/node-gyp-bin"
   ],
   "main": "lib/run-script.js",
   "repository": {
