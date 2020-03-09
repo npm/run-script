@@ -2,7 +2,7 @@ const t = require('tap')
 const requireInject = require('require-inject')
 const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
   '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
-  '../lib/promise-spawn.js': async (...args) => args,
+  '@npmcli/promise-spawn': async (...args) => args,
 })
 
 t.test('pkg has no scripts, early exit', t => runScriptPkg({
