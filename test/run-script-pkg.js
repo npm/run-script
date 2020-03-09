@@ -45,6 +45,77 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   path: 'path',
 }])))
 
+t.test('do the banner when stdio is inherited', t => {
+  const logs = []
+  const consoleLog = console.log
+  console.log = (...args) => logs.push(args)
+  t.teardown(() => console.log = consoleLog)
+  return runScriptPkg({
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'inherit',
+    cmd: 'bar',
+    pkg: {
+      _id: 'foo@1.2.3',
+      scripts: {},
+    },
+  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
+    stdioString: false,
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'inherit',
+    cmd: 'bar',
+  }, {
+    event: 'foo',
+    script: 'bar',
+    pkgid: 'foo@1.2.3',
+    path: 'path',
+  }])).then(() => t.strictSame(logs, [['> foo@1.2.3 foo\n> bar']]))
+})
+
+t.test('do the banner with no pkgid', t => {
+  const logs = []
+  const consoleLog = console.log
+  console.log = (...args) => logs.push(args)
+  t.teardown(() => console.log = consoleLog)
+  return runScriptPkg({
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'inherit',
+    cmd: 'bar',
+    pkg: {
+      scripts: {},
+    },
+  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
+    stdioString: false,
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'inherit',
+    cmd: 'bar',
+  }, {
+    event: 'foo',
+    script: 'bar',
+    path: 'path',
+    pkgid: undefined,
+  }])).then(() => t.strictSame(logs, [['> foo\n> bar']]))
+})
+
 t.test('pkg has foo script', t => runScriptPkg({
   event: 'foo',
   path: 'path',
