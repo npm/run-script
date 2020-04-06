@@ -178,3 +178,40 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
   pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
+
+t.test('end stdin if present', async t => {
+  let stdinEnded = false
+  const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
+    '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
+    '@npmcli/promise-spawn': (...args) => {
+      const p = Promise.resolve(args)
+      p.stdin = { end: () => stdinEnded = true }
+      return p
+    },
+  })
+  await t.resolveMatch(runScriptPkg({
+    event: 'cat',
+    path: 'path',
+    stdin: { end: () => t.end() },
+    pkg: {
+      _id: 'kitty@1.2.3',
+      scripts: {
+        cat: 'cat',
+      },
+    },
+  }), ['sh', ['-c', 'cat'], {
+    event: 'cat',
+    path: 'path',
+    scriptShell: undefined,
+    env: {},
+    stdio: 'pipe',
+    cmd: 'cat',
+    stdioString: false,
+  }, {
+    event: 'cat',
+    script: 'cat',
+    pkgid: 'kitty@1.2.3',
+    path: 'path',
+  }])
+  t.equal(stdinEnded, true, 'stdin was ended properly')
+})
