@@ -78,7 +78,44 @@ t.test('do the banner when stdio is inherited', t => {
     script: 'bar',
     pkgid: 'foo@1.2.3',
     path: 'path',
-  }])).then(() => t.strictSame(logs, [['> foo@1.2.3 foo\n> bar']]))
+  }])).then(() => t.strictSame(logs, [['\n> foo@1.2.3 foo\n> bar\n']]))
+})
+
+t.test('do not show banner when stdio is inherited, if suppressed', t => {
+  const logs = []
+  const consoleLog = console.log
+  console.log = (...args) => logs.push(args)
+  t.teardown(() => console.log = consoleLog)
+  return runScriptPkg({
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'inherit',
+    cmd: 'bar',
+    pkg: {
+      _id: 'foo@1.2.3',
+      scripts: {},
+    },
+    banner: false,
+  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
+    stdioString: false,
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'inherit',
+    cmd: 'bar',
+  }, {
+    event: 'foo',
+    script: 'bar',
+    pkgid: 'foo@1.2.3',
+    path: 'path',
+  }])).then(() => t.strictSame(logs, []))
 })
 
 t.test('do the banner with no pkgid', t => {
@@ -113,7 +150,7 @@ t.test('do the banner with no pkgid', t => {
     script: 'bar',
     path: 'path',
     pkgid: undefined,
-  }])).then(() => t.strictSame(logs, [['> foo\n> bar']]))
+  }])).then(() => t.strictSame(logs, [['\n> foo\n> bar\n']]))
 })
 
 t.test('pkg has foo script', t => runScriptPkg({
