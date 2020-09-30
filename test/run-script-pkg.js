@@ -1,8 +1,14 @@
 const t = require('tap')
 const requireInject = require('require-inject')
+
+let fakeIsNodeGypPackage = false
+
 const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
   '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
   '@npmcli/promise-spawn': async (...args) => args,
+  '@npmcli/node-gyp': {
+    isNodeGypPackage: async(path) => Promise.resolve(fakeIsNodeGypPackage),
+    defaultGypInstallScript: 'node-gyp rebuild'}
 })
 
 t.test('pkg has no scripts, early exit', t => runScriptPkg({
@@ -215,6 +221,45 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
   pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
+
+t.test('pkg has no install or preinstall script, but node-gyp files are present', async t => {
+  fakeIsNodeGypPackage = true
+
+  const res = await runScriptPkg({
+    event: 'install',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'pipe',
+    pkg: {
+      _id: 'foo@1.2.3',
+      scripts: {
+      },
+    }
+  })
+
+  t.strictSame(res, [
+    'sh',
+    [ '-c', 'node-gyp rebuild' ],
+    {
+      event: 'install',
+      path: 'path',
+      scriptShell: 'sh',
+      env: { environ: 'value' },
+      stdio: 'pipe',
+      cmd: 'node-gyp rebuild',
+      stdioString: false
+    },
+    {
+      event: 'install',
+      script: 'node-gyp rebuild',
+      pkgid: 'foo@1.2.3',
+      path: 'path'
+    }
+  ])
+})
 
 t.test('end stdin if present', async t => {
   let stdinEnded = false
