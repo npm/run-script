@@ -20,6 +20,7 @@
     "tap": "^14.10.6"
   },
   "dependencies": {
+    "@npmcli/node-gyp": "^1.0.0",
     "@npmcli/promise-spawn": "^1.2.0",
     "infer-owner": "^1.0.4",
     "node-gyp": "^7.1.0",
