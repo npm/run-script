@@ -261,6 +261,28 @@ t.test('pkg has no install or preinstall script, but node-gyp files are present'
   ])
 })
 
+t.test('pkg has no install or preinstall script, but gypfile:false', async t => {
+  fakeIsNodeGypPackage = true
+
+  const res = await runScriptPkg({
+    event: 'install',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'pipe',
+    pkg: {
+      _id: 'foo@1.2.3',
+      gypfile: false,
+      scripts: {
+      },
+    }
+  })
+
+  t.strictSame(res, { code: 0, signal: null })
+})
+
 t.test('end stdin if present', async t => {
   let stdinEnded = false
   const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
