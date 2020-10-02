@@ -16,6 +16,11 @@ t.test('pkg has no scripts, early exit', t => runScriptPkg({
   pkg: {},
 }).then(res => t.strictSame(res, { code: 0, signal: null })))
 
+t.test('pkg has no scripts, early exit', t => runScriptPkg({
+  event: 'install',
+  pkg: {},
+}).then(res => t.strictSame(res, { code: 0, signal: null })))
+
 t.test('pkg has no foo script, early exit', t => runScriptPkg({
   event: 'foo',
   pkg: { scripts: {} },
