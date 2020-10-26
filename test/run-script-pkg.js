@@ -1,3 +1,4 @@
+const { EventEmitter } = require('events')
 const t = require('tap')
 const requireInject = require('require-inject')
 
@@ -5,7 +6,11 @@ let fakeIsNodeGypPackage = false
 
 const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
   '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
-  '@npmcli/promise-spawn': async (...args) => args,
+  '@npmcli/promise-spawn': (...args) => {
+    const p = Promise.resolve(args)
+    p.process = new EventEmitter()
+    return p
+  },
   '@npmcli/node-gyp': {
     isNodeGypPackage: async(path) => Promise.resolve(fakeIsNodeGypPackage),
     defaultGypInstallScript: 'node-gyp rebuild'}
@@ -38,7 +43,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   pkg: {
     _id: 'foo@1.2.3',
     scripts: {},
-  },
+  }
 }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
   stdioString: false,
   event: 'foo',
@@ -295,6 +300,7 @@ t.test('end stdin if present', async t => {
     '@npmcli/promise-spawn': (...args) => {
       const p = Promise.resolve(args)
       p.stdin = { end: () => stdinEnded = true }
+      p.process = new EventEmitter()
       return p
     },
   })
