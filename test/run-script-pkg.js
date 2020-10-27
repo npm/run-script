@@ -43,7 +43,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   pkg: {
     _id: 'foo@1.2.3',
     scripts: {},
-  }
+  },
 }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
   stdioString: false,
   event: 'foo',
