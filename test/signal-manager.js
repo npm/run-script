@@ -22,13 +22,13 @@ test('adds only one handler for each signal, removes handlers when children have
     t.equal(handlers.length, 1, 'only has one handler')
   }
 
-  procOne.emit('exit', { code: 0 })
+  procOne.emit('exit', 0)
 
   for (const signal of signalManager.forwardedSignals) {
     t.equal(process.listeners(signal).includes(signalManager.handleSignal), true, 'did not remove listeners yet')
   }
 
-  procTwo.emit('exit', { code: 0 })
+  procTwo.emit('exit', 0)
 
   for (const signal of signalManager.forwardedSignals) {
     t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'listener has been removed')
@@ -41,7 +41,7 @@ test('forwards signals to child process', t => {
   const proc = new EventEmitter()
   proc.kill = (signal) => {
     t.equal(signal, signalManager.forwardedSignals[0], 'child receives correct signal')
-    proc.emit('exit', { code: 0 })
+    proc.emit('exit', 0)
     for (const signal of signalManager.forwardedSignals) {
       t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'listener has been removed')
     }
