@@ -26,6 +26,87 @@ t.test('pkg has no scripts, early exit', t => runScriptPkg({
   pkg: {},
 }).then(res => t.strictSame(res, { code: 0, signal: null })))
 
+t.test('pkg has no scripts, no server.js', t => runScriptPkg({
+  event: 'start',
+  pkg: {},
+  path: t.testdir({}),
+}).then(res => t.strictSame(res, { code: 0, signal: null })))
+
+t.test('pkg has server.js, start not specified', async t => {
+  const path = t.testdir({ 'server.js': '' })
+  const res = await runScriptPkg({
+    event: 'start',
+    path,
+    pkg: {
+      name: 'foo',
+      version: '1.2.3',
+    },
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'pipe',
+    pkg: {
+      _id: 'foo@1.2.3',
+      scripts: {},
+    },
+  })
+  t.strictSame(res, ['sh', ['-c', 'node server.js'], {
+    stdioString: false,
+    event: 'start',
+    path,
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'pipe',
+    cmd: 'node server.js',
+  }, {
+    event: 'start',
+    script: 'node server.js',
+    pkgid: 'foo@1.2.3',
+    path,
+  }])
+})
+
+t.test('pkg has server.js, start not specified, with args', async t => {
+  const path = t.testdir({ 'server.js': '' })
+  const res = await runScriptPkg({
+    event: 'start',
+    path,
+    pkg: {
+      name: 'foo',
+      version: '1.2.3',
+    },
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    args: ['a', 'b', 'c'],
+    stdio: 'pipe',
+    pkg: {
+      _id: 'foo@1.2.3',
+      scripts: {},
+    },
+  })
+  t.strictSame(res, ['sh', ['-c', 'node server.js "a" "b" "c"'], {
+    stdioString: false,
+    event: 'start',
+    path,
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'pipe',
+    cmd: 'node server.js "a" "b" "c"',
+  }, {
+    event: 'start',
+    script: 'node server.js "a" "b" "c"',
+    pkgid: 'foo@1.2.3',
+    path,
+  }])
+})
+
 t.test('pkg has no foo script, early exit', t => runScriptPkg({
   event: 'foo',
   pkg: { scripts: {} },
