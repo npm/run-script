@@ -3,11 +3,18 @@ const t = require('tap')
 const requireInject = require('require-inject')
 
 let fakeIsNodeGypPackage = false
+let SIGNAL = null
+let EXIT_CODE = 0
 
 const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
   '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
   '@npmcli/promise-spawn': (...args) => {
-    const p = Promise.resolve(args)
+    const p = SIGNAL || EXIT_CODE
+      ? Promise.reject(Object.assign(new Error('test command failed'), {
+        signal: SIGNAL,
+        code: EXIT_CODE,
+      }))
+      : Promise.resolve(args)
     p.process = new EventEmitter()
     return p
   },
@@ -410,4 +417,57 @@ t.test('end stdin if present', async t => {
     path: 'path',
   }])
   t.equal(stdinEnded, true, 'stdin was ended properly')
+})
+
+t.test('kill process when foreground process ends with signal', t => {
+  const { kill } = process.kill
+  t.teardown(() => {
+    process.kill = kill
+    SIGNAL = null
+  })
+  process.kill = (pid, signal) => {
+    t.equal(process.pid, pid, 'got expected pid')
+    t.equal(signal, 'SIGFOO', 'got expected signal')
+  }
+  SIGNAL = 'SIGFOO'
+  const p = runScriptPkg({
+    event: 'sleep',
+    path: 'path',
+    stdio: 'inherit',
+    banner: false,
+    signalTimeout: 1,
+    pkg: {
+      _id: 'husky@1.2.3',
+      name: 'husky',
+      version: '1.2.3',
+      scripts: {
+        sleep: 'sleep 1000000',
+      },
+    },
+  })
+  p.catch(er => {
+    t.equal(er.signal, 'SIGFOO')
+    t.end()
+  })
+})
+
+t.test('fail promise when background process ends with signal', t => {
+  t.teardown(() => SIGNAL = null)
+  SIGNAL = 'SIGBAR'
+  const p = runScriptPkg({
+    event: 'sleep',
+    path: 'path',
+    pkg: {
+      _id: 'husky@1.2.3',
+      name: 'husky',
+      version: '1.2.3',
+      scripts: {
+        sleep: 'sleep 1000000',
+      },
+    },
+  })
+  p.catch(er => {
+    t.equal(er.signal, 'SIGBAR')
+    t.end()
+  })
 })
