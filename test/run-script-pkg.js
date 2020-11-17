@@ -149,7 +149,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   path: 'path',
 }])))
 
-t.test('do the banner when stdio is inherited', t => {
+t.test('do the banner when stdio is inherited, handle line breaks', t => {
   const logs = []
   const consoleLog = console.log
   console.log = (...args) => logs.push(args)
@@ -162,12 +162,12 @@ t.test('do the banner when stdio is inherited', t => {
       environ: 'value',
     },
     stdio: 'inherit',
-    cmd: 'bar',
+    cmd: 'bar\nbaz\n',
     pkg: {
       _id: 'foo@1.2.3',
       scripts: {},
     },
-  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
+  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar\nbaz\n'], {
     stdioString: false,
     event: 'foo',
     path: 'path',
@@ -176,13 +176,13 @@ t.test('do the banner when stdio is inherited', t => {
       environ: 'value',
     },
     stdio: 'inherit',
-    cmd: 'bar',
+    cmd: 'bar\nbaz\n',
   }, {
     event: 'foo',
-    script: 'bar',
+    script: 'bar\nbaz\n',
     pkgid: 'foo@1.2.3',
     path: 'path',
-  }])).then(() => t.strictSame(logs, [['\n> foo@1.2.3 foo\n> bar\n']]))
+  }])).then(() => t.strictSame(logs, [['\n> foo@1.2.3 foo\n> bar\n> baz\n']]))
 })
 
 t.test('do not show banner when stdio is inherited, if suppressed', t => {
