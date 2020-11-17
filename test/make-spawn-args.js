@@ -21,10 +21,10 @@ if (isWindows) {
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
-      cmd: 'script',
+      cmd: 'script "quoted parameter"; second command',
     }), [
       'cmd',
-      [ '/d', '/s', '/c', '"script"' ],
+      [ '/d', '/s', '/c', `script "quoted parameter"& second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -43,10 +43,10 @@ if (isWindows) {
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
-      cmd: 'script',
+      cmd: 'script "quoted parameter"; second command',
     }), [
       'blrorp',
-      [ '-c', 'script' ],
+      [ '-c', `script "quoted parameter"& second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -62,11 +62,11 @@ if (isWindows) {
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
-      cmd: 'script',
+      cmd: 'script "quoted parameter"; second command',
       scriptShell: 'cmd.exe',
     }), [
       'cmd.exe',
-      [ '/d', '/s', '/c', '"script"' ],
+      [ '/d', '/s', '/c', `script "quoted parameter"& second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -88,10 +88,10 @@ if (isWindows) {
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
-      cmd: 'script',
+      cmd: 'script "quoted parameter"; second command',
     }), [
       'sh',
-      [ '-c', 'script' ],
+      [ '-c', `script 'quoted parameter'; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -109,11 +109,11 @@ if (isWindows) {
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
-      cmd: 'script',
+      cmd: 'script "quoted parameter"; second command',
       scriptShell: 'cmd.exe',
     }), [
       'cmd.exe',
-      [ '/d', '/s', '/c', '"script"' ],
+      [ '/d', '/s', '/c', `script 'quoted parameter'; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
