@@ -46,7 +46,7 @@ if (isWindows) {
       cmd: 'script "quoted parameter"; second command',
     }), [
       'blrorp',
-      [ '-c', `script "quoted parameter"& second command` ],
+      [ '-c', `script "quoted parameter"; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -91,7 +91,7 @@ if (isWindows) {
       cmd: 'script "quoted parameter"; second command',
     }), [
       'sh',
-      [ '-c', `script 'quoted parameter'; second command` ],
+      [ '-c', `script "quoted parameter"; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
