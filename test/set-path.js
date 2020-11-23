@@ -60,7 +60,7 @@ if (isWindows) {
       '/x/y/node_modules/.bin:' +
       '/x/node_modules/.bin:' +
       '/node_modules/.bin:' +
-      require('path').resolve(__dirname, '../lib/node-gyp-bin') + ':' +
+      require('path').posix.resolve(__dirname, '../lib/node-gyp-bin') + ':' +
       '/usr/local/bin:' +
       '/usr/local/sbin:' +
       '/usr/bin:' +
