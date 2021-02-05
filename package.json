@@ -33,7 +33,7 @@
     "infer-owner": "^1.0.4",
     "node-gyp": "^7.1.0",
     "puka": "^1.0.1",
-    "read-package-json-fast": "^1.1.3"
+    "read-package-json-fast": "^2.0.1"
   },
   "files": [
     "lib/**/*.js",
