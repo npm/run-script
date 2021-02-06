@@ -59,6 +59,27 @@ if (isWindows) {
       }
     ])
 
+    // empty string
+    t.match(makeSpawnArgs({
+      event: 'event',
+      path: 'path',
+      cmd: 'script ""; second command',
+      scriptShell: 'cmd.exe',
+    }), [
+      'cmd.exe',
+      [ '/d', '/s', '/c', `script ""& second command` ],
+      {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script'
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: true,
+      }
+    ])
+
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
