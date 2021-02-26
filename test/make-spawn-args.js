@@ -24,7 +24,7 @@ if (isWindows) {
       cmd: 'script "quoted parameter"; second command',
     }), [
       'cmd',
-      [ '/d', '/s', '/c', `script "quoted parameter"& second command` ],
+      [ '/d', '/s', '/c', `script \"quoted parameter\"; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -66,7 +66,7 @@ if (isWindows) {
       scriptShell: 'cmd.exe',
     }), [
       'cmd.exe',
-      [ '/d', '/s', '/c', `script "quoted parameter"& second command` ],
+      [ '/d', '/s', '/c', `script \"quoted parameter\"; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -113,7 +113,7 @@ if (isWindows) {
       scriptShell: 'cmd.exe',
     }), [
       'cmd.exe',
-      [ '/d', '/s', '/c', `script 'quoted parameter'; second command` ],
+      [ '/d', '/s', '/c', `script \"quoted parameter\"; second command` ],
       {
         env: {
           npm_package_json: /package\.json$/,
