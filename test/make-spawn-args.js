@@ -16,8 +16,8 @@ const makeSpawnArgs = requireInject('../lib/make-spawn-args.js', {
 
 if (isWindows) {
   t.test('windows', t => {
-    // with no comspec
-    delete process.env.comspec
+    // with no ComSpec
+    delete process.env.ComSpec
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
@@ -38,8 +38,8 @@ if (isWindows) {
       }
     ])
 
-    // with a funky comspec
-    process.env.comspec = 'blrorp'
+    // with a funky ComSpec
+    process.env.ComSpec = 'blrorp'
     t.match(makeSpawnArgs({
       event: 'event',
       path: 'path',
