@@ -20,4 +20,4 @@ t.test('package provided, skip look up', t =>
     pkg: 'bar',
   })))
 
-t.isa(runScript.isServerPackage, 'function', 'export isServerPackage fn')
+t.type(runScript.isServerPackage, 'function', 'export isServerPackage fn')

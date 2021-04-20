@@ -37,7 +37,7 @@ const ret = packageEnvs(foo, {
   name: 'name',
   version: 'version',
 })
-t.notEqual(ret, foo, 'returns new object')
+t.not(ret, foo, 'returns new object')
 t.strictSame(ret, {
   foo: 'bar',
   npm_package_name: 'name',
