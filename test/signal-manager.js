@@ -34,7 +34,7 @@ test('adds only one handler for each signal, removes handlers when children have
     t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'listener has been removed')
   }
 
-  t.done()
+  t.end()
 })
 
 test('forwards signals to child process', t => {
@@ -45,7 +45,7 @@ test('forwards signals to child process', t => {
     for (const signal of signalManager.forwardedSignals) {
       t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'listener has been removed')
     }
-    t.done()
+    t.end()
   }
 
   signalManager.add(proc)

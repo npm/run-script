@@ -25,7 +25,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "minipass": "^3.1.1",
     "require-inject": "^1.4.4",
-    "tap": "^14.11.0"
+    "tap": "^15.0.4"
   },
   "dependencies": {
     "@npmcli/node-gyp": "^1.0.2",
