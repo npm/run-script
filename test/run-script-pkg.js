@@ -1,6 +1,7 @@
 const { EventEmitter } = require('events')
 const t = require('tap')
 const requireInject = require('require-inject')
+const isWindows = require('../lib/is-windows.js')
 
 let fakeIsNodeGypPackage = false
 let SIGNAL = null
@@ -96,7 +97,7 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       scripts: {},
     },
   })
-  t.strictSame(res, ['sh', ['-c', 'node server.js "a" "b" "c"'], {
+  t.strictSame(res, ['sh', ['-c', 'node server.js a b c'], {
     stdioString: false,
     event: 'start',
     path,
@@ -105,10 +106,10 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       environ: 'value',
     },
     stdio: 'pipe',
-    cmd: 'node server.js "a" "b" "c"',
+    cmd: 'node server.js a b c',
   }, {
     event: 'start',
-    script: 'node server.js "a" "b" "c"',
+    script: 'node server.js a b c',
     pkgid: 'foo@1.2.3',
     path,
   }])
@@ -288,6 +289,10 @@ t.test('pkg has foo script', t => runScriptPkg({
   path: 'path',
 }])))
 
+const expectedCommand = isWindows
+  ? 'bar a --flag "markdown `code`" ^^^"$X^^^ \\\\\\^^^"blah\\\\\\^^^"^^^" $PWD ^^^%CD^^^% "^" ! \\ ">" "<" "|" "&" \' ^^^"\\^^^"^^^" ` "  " ""'
+  : "bar a --flag 'markdown `code`' '$X \\\"blah\\\"' '$PWD' %CD% ^ ! '\\' '>' '<' '|' '&' \\' '\"' '`' '  ' ''"
+
 t.test('pkg has foo script, with args', t => runScriptPkg({
   event: 'foo',
   path: 'path',
@@ -302,8 +307,8 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
       foo: 'bar',
     },
   },
-  args: ['a', 'b', 'c'],
-}).then(res => t.strictSame(res, ['sh', ['-c', 'bar "a" "b" "c"'], {
+  args: ['a', '--flag', 'markdown `code`', '$X \\"blah\\"', '$PWD', '%CD%', '^', '!', '\\', '>', '<', '|', '&', "'", '"', '`', '  ', ''],
+}).then(res => t.strictSame(res, ['sh', ['-c', expectedCommand,], {
   stdioString: false,
   event: 'foo',
   path: 'path',
@@ -312,10 +317,10 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
     environ: 'value',
   },
   stdio: 'pipe',
-  cmd: 'bar "a" "b" "c"',
+  cmd: expectedCommand,
 }, {
   event: 'foo',
-  script: 'bar "a" "b" "c"',
+  script: expectedCommand,
   pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
