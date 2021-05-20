@@ -308,7 +308,7 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
     },
   },
   args: ['a', '--flag', 'markdown `code`', '$X \\"blah\\"', '$PWD', '%CD%', '^', '!', '\\', '>', '<', '|', '&', "'", '"', '`', '  ', ''],
-}).then(res => t.strictSame(res, ['sh', ['-c', expectedCommand,], {
+}).then(res => t.strictSame(res, ['sh', ['-c', expectedCommand], {
   stdioString: false,
   event: 'foo',
   path: 'path',
@@ -324,6 +324,25 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
   pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
+
+t.test('args are double escaped on Windows after a pipe', t => runScriptPkg({
+  event: 'foo',
+  path: 'path',
+  scriptShell: 'sh',
+  pkg: {
+    scripts: {
+      foo: 'bar | baz "qux"',
+    },
+  },
+  args: ['"'],
+}).then(([, [, cmd]]) =>
+  t.strictSame(
+    cmd,
+    isWindows
+      ? 'bar | baz "qux" ^^^^^^^"\\^^^^^^^"^^^^^^^"'
+      : `bar | baz "qux" '"'`
+  )
+))
 
 t.test('pkg has no install or preinstall script, but node-gyp files are present', async t => {
   fakeIsNodeGypPackage = true
