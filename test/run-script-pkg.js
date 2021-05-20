@@ -2,6 +2,15 @@ const { EventEmitter } = require('events')
 const t = require('tap')
 const requireInject = require('require-inject')
 const isWindows = require('../lib/is-windows.js')
+const { sh } = require("puka")
+
+if (!process.env.__FAKE_TESTING_PLATFORM__) {
+  const fake = isWindows ? 'posix' : 'win32'
+  t.spawn(process.execPath, [__filename, fake], { env: {
+    ...process.env,
+    __FAKE_TESTING_PLATFORM__: fake,
+  }})
+}
 
 let fakeIsNodeGypPackage = false
 let SIGNAL = null
@@ -41,6 +50,9 @@ t.test('pkg has no scripts, no server.js', t => runScriptPkg({
 }).then(res => t.strictSame(res, { code: 0, signal: null })))
 
 t.test('pkg has server.js, start not specified', async t => {
+  const expectedCommand = isWindows
+    ? sh`${require('path').resolve(__dirname, '../lib/node.cmd')} server.js`
+    : 'node server.js'
   const path = t.testdir({ 'server.js': '' })
   const res = await runScriptPkg({
     event: 'start',
@@ -59,7 +71,7 @@ t.test('pkg has server.js, start not specified', async t => {
       scripts: {},
     },
   })
-  t.strictSame(res, ['sh', ['-c', 'node server.js'], {
+  t.strictSame(res, ['sh', ['-c', expectedCommand], {
     stdioString: false,
     event: 'start',
     path,
@@ -68,16 +80,19 @@ t.test('pkg has server.js, start not specified', async t => {
       environ: 'value',
     },
     stdio: 'pipe',
-    cmd: 'node server.js',
+    cmd: expectedCommand,
   }, {
     event: 'start',
-    script: 'node server.js',
+    script: expectedCommand,
     pkgid: 'foo@1.2.3',
     path,
   }])
 })
 
 t.test('pkg has server.js, start not specified, with args', async t => {
+  const expectedCommand = isWindows
+    ? sh`${require('path').resolve(__dirname, '../lib/node.cmd')} server.js a b c`
+    : 'node server.js a b c'
   const path = t.testdir({ 'server.js': '' })
   const res = await runScriptPkg({
     event: 'start',
@@ -97,7 +112,7 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       scripts: {},
     },
   })
-  t.strictSame(res, ['sh', ['-c', 'node server.js a b c'], {
+  t.strictSame(res, ['sh', ['-c', expectedCommand], {
     stdioString: false,
     event: 'start',
     path,
@@ -106,10 +121,10 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       environ: 'value',
     },
     stdio: 'pipe',
-    cmd: 'node server.js a b c',
+    cmd: expectedCommand,
   }, {
     event: 'start',
-    script: 'node server.js a b c',
+    script: expectedCommand,
     pkgid: 'foo@1.2.3',
     path,
   }])
@@ -289,41 +304,42 @@ t.test('pkg has foo script', t => runScriptPkg({
   path: 'path',
 }])))
 
-const expectedCommand = isWindows
-  ? 'bar a --flag "markdown `code`" ^^^"$X^^^ \\\\\\^^^"blah\\\\\\^^^"^^^" $PWD ^^^%CD^^^% "^" ! \\ ">" "<" "|" "&" \' ^^^"\\^^^"^^^" ` "  " ""'
-  : "bar a --flag 'markdown `code`' '$X \\\"blah\\\"' '$PWD' %CD% ^ ! '\\' '>' '<' '|' '&' \\' '\"' '`' '  ' ''"
-
-t.test('pkg has foo script, with args', t => runScriptPkg({
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  pkg: {
-    _id: 'foo@1.2.3',
-    scripts: {
-      foo: 'bar',
+t.test('pkg has foo script, with args', t => {
+  const expectedCommand = isWindows
+    ? 'bar a --flag "markdown `code`" ^^^"$X^^^ \\\\\\^^^"blah\\\\\\^^^"^^^" $PWD ^^^%CD^^^% "^" ! \\ ">" "<" "|" "&" \' ^^^"\\^^^"^^^" ` "  " ""'
+    : "bar a --flag 'markdown `code`' '$X \\\"blah\\\"' '$PWD' %CD% ^ ! '\\' '>' '<' '|' '&' \\' '\"' '`' '  ' ''"
+  return runScriptPkg({
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
     },
-  },
-  args: ['a', '--flag', 'markdown `code`', '$X \\"blah\\"', '$PWD', '%CD%', '^', '!', '\\', '>', '<', '|', '&', "'", '"', '`', '  ', ''],
-}).then(res => t.strictSame(res, ['sh', ['-c', expectedCommand], {
-  stdioString: false,
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  cmd: expectedCommand,
-}, {
-  event: 'foo',
-  script: expectedCommand,
-  pkgid: 'foo@1.2.3',
-  path: 'path',
-}])))
+    stdio: 'pipe',
+    pkg: {
+      _id: 'foo@1.2.3',
+      scripts: {
+        foo: 'bar',
+      },
+    },
+    args: ['a', '--flag', 'markdown `code`', '$X \\"blah\\"', '$PWD', '%CD%', '^', '!', '\\', '>', '<', '|', '&', "'", '"', '`', '  ', ''],
+  }).then(res => t.strictSame(res, ['sh', ['-c', expectedCommand], {
+    stdioString: false,
+    event: 'foo',
+    path: 'path',
+    scriptShell: 'sh',
+    env: {
+      environ: 'value',
+    },
+    stdio: 'pipe',
+    cmd: expectedCommand,
+  }, {
+    event: 'foo',
+    script: expectedCommand,
+    pkgid: 'foo@1.2.3',
+    path: 'path',
+  }]))
+})
 
 t.test('args are double escaped on Windows after a pipe', t => runScriptPkg({
   event: 'foo',
