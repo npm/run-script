@@ -37,6 +37,7 @@
   },
   "files": [
     "lib/**/*.js",
+    "lib/node.cmd",
     "lib/node-gyp-bin"
   ],
   "main": "lib/run-script.js",
