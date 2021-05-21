@@ -51,7 +51,7 @@ t.test('pkg has no scripts, no server.js', t => runScriptPkg({
 
 t.test('pkg has server.js, start not specified', async t => {
   const expectedCommand = isWindows
-    ? sh`${require('path').resolve(__dirname, '../lib/node.cmd')} server.js`
+    ? sh`${require('path').resolve(__dirname, '../lib/nodewrapper.cmd')} server.js`
     : 'node server.js'
   const path = t.testdir({ 'server.js': '' })
   const res = await runScriptPkg({
@@ -91,7 +91,7 @@ t.test('pkg has server.js, start not specified', async t => {
 
 t.test('pkg has server.js, start not specified, with args', async t => {
   const expectedCommand = isWindows
-    ? sh`${require('path').resolve(__dirname, '../lib/node.cmd')} server.js a b c`
+    ? sh`${require('path').resolve(__dirname, '../lib/nodewrapper.cmd')} server.js a b c`
     : 'node server.js a b c'
   const path = t.testdir({ 'server.js': '' })
   const res = await runScriptPkg({
