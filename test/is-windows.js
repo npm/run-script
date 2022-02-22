@@ -6,6 +6,7 @@ if (!process.env.__FAKE_TESTING_PLATFORM__) {
   const fake = isWindows ? 'unix' : 'win32'
   t.spawn(process.execPath, [__filename, fake], { env: {
     __FAKE_TESTING_PLATFORM__: fake,
-  }})
-} else
+  } })
+} else {
   t.equal(isWindows, process.platform !== 'win32', 'fake')
+}

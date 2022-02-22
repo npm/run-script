@@ -4,7 +4,7 @@ const requireInject = require('require-inject')
 
 let fakeIsNodeGypPackage = false
 let SIGNAL = null
-let EXIT_CODE = 0
+const EXIT_CODE = 0
 
 const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
   '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
@@ -19,8 +19,8 @@ const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
     return p
   },
   '@npmcli/node-gyp': {
-    isNodeGypPackage: async(path) => Promise.resolve(fakeIsNodeGypPackage),
-    defaultGypInstallScript: 'node-gyp rebuild'}
+    isNodeGypPackage: async (path) => Promise.resolve(fakeIsNodeGypPackage),
+    defaultGypInstallScript: 'node-gyp rebuild' },
 })
 
 t.test('pkg has no scripts, early exit', t => runScriptPkg({
@@ -44,10 +44,6 @@ t.test('pkg has server.js, start not specified', async t => {
   const res = await runScriptPkg({
     event: 'start',
     path,
-    pkg: {
-      name: 'foo',
-      version: '1.2.3',
-    },
     scriptShell: 'sh',
     env: {
       environ: 'value',
@@ -81,10 +77,6 @@ t.test('pkg has server.js, start not specified, with args', async t => {
   const res = await runScriptPkg({
     event: 'start',
     path,
-    pkg: {
-      name: 'foo',
-      version: '1.2.3',
-    },
     scriptShell: 'sh',
     env: {
       environ: 'value',
@@ -335,12 +327,12 @@ t.test('pkg has no install or preinstall script, but node-gyp files are present'
       _id: 'foo@1.2.3',
       scripts: {
       },
-    }
+    },
   })
 
   t.strictSame(res, [
     'sh',
-    [ '-c', 'node-gyp rebuild' ],
+    ['-c', 'node-gyp rebuild'],
     {
       event: 'install',
       path: 'path',
@@ -348,14 +340,14 @@ t.test('pkg has no install or preinstall script, but node-gyp files are present'
       env: { environ: 'value' },
       stdio: 'pipe',
       cmd: 'node-gyp rebuild',
-      stdioString: false
+      stdioString: false,
     },
     {
       event: 'install',
       script: 'node-gyp rebuild',
       pkgid: 'foo@1.2.3',
-      path: 'path'
-    }
+      path: 'path',
+    },
   ])
 })
 
@@ -375,7 +367,7 @@ t.test('pkg has no install or preinstall script, but gypfile:false', async t => 
       gypfile: false,
       scripts: {
       },
-    }
+    },
   })
 
   t.strictSame(res, { code: 0, signal: null })

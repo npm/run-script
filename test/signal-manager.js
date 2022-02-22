@@ -8,12 +8,16 @@ test('adds only one handler for each signal, removes handlers when children have
   const procTwo = new EventEmitter()
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'does not have a listener yet')
+    t.equal(
+      process.listeners(signal).includes(signalManager.handleSignal),
+      false, 'does not have a listener yet')
   }
   signalManager.add(procOne)
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(process.listeners(signal).includes(signalManager.handleSignal), true, 'has a listener for forwarded signals')
+    t.equal(
+      process.listeners(signal).includes(signalManager.handleSignal),
+      true, 'has a listener for forwarded signals')
   }
 
   signalManager.add(procTwo)
@@ -25,13 +29,17 @@ test('adds only one handler for each signal, removes handlers when children have
   procOne.emit('exit', 0)
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(process.listeners(signal).includes(signalManager.handleSignal), true, 'did not remove listeners yet')
+    t.equal(
+      process.listeners(signal).includes(signalManager.handleSignal),
+      true, 'did not remove listeners yet')
   }
 
   procTwo.emit('exit', 0)
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'listener has been removed')
+    t.equal(
+      process.listeners(signal).includes(signalManager.handleSignal),
+      false, 'listener has been removed')
   }
 
   t.end()
@@ -43,14 +51,17 @@ test('forwards signals to child process', t => {
     t.equal(signal, signalManager.forwardedSignals[0], 'child receives correct signal')
     proc.emit('exit', 0)
     for (const signal of signalManager.forwardedSignals) {
-      t.equal(process.listeners(signal).includes(signalManager.handleSignal), false, 'listener has been removed')
+      t.equal(
+        process.listeners(signal).includes(signalManager.handleSignal),
+        false, 'listener has been removed')
     }
     t.end()
   }
 
   signalManager.add(proc)
-  // passing the signal name here is necessary to fake the effects of actually receiving the signal
-  // per nodejs documentation signal handlers receive the name of the signal as their first parameter
+  // passing the signal name here is necessary to fake the effects of actually
+  // receiving the signal per nodejs documentation signal handlers receive the
+  // name of the signal as their first parameter
   // https://nodejs.org/api/process.html#process_signal_events
   process.emit(signalManager.forwardedSignals[0], signalManager.forwardedSignals[0])
 })
