@@ -16,11 +16,12 @@ t.test('returns false if server.js missing', async t => {
 
 t.test('returns false if server.js not a file', async t => {
   const path = t.testdir({
-    'server.js': {}
+    'server.js': {},
   })
   t.equal(await isServerPackage(path), false)
 })
 
 t.test('works without fs.promises', async t => {
-  t.doesNotThrow(() => requireInject('../lib/is-server-package', { fs: { ...require('fs'), promises: null }}))
+  t.doesNotThrow(() =>
+    requireInject('../lib/is-server-package', { fs: { ...require('fs'), promises: null } }))
 })

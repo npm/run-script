@@ -10,7 +10,7 @@ t.strictSame(packageEnvs({}, {
     empty: '',
     zero: 0,
     false: false,
-    nested: {object: {is: {included: true }}},
+    nested: { object: { is: { included: true } } },
   },
   bin: {
     foo: './bar.js',

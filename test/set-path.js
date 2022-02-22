@@ -1,19 +1,18 @@
 const t = require('tap')
 const requireInject = require('require-inject')
 const isWindows = require('../lib/is-windows.js')
-const which = require('which').sync
 
 if (!process.env.__FAKE_TESTING_PLATFORM__) {
   const fake = isWindows ? 'posix' : 'win32'
   t.spawn(process.execPath, [__filename, fake], { env: {
     ...process.env,
     __FAKE_TESTING_PLATFORM__: fake,
-  }})
+  } })
 }
 
 if (isWindows) {
   const setPATH = requireInject('../lib/set-path.js', {
-   path: require('path').win32,
+    path: require('path').win32,
   })
   const expect = [
     'c:\\x\\y\\z\\node_modules\\a\\node_modules\\b\\node_modules\\.bin',
@@ -30,7 +29,7 @@ if (isWindows) {
     'c:\\usr\\bin',
     'c:\\usr\\sbin',
     'c:\\bin',
-    'c:\\sbin'
+    'c:\\sbin',
   ].join(';')
   t.strictSame(setPATH('c:\\x\\y\\z\\node_modules\\a\\node_modules\\b', {
     foo: 'bar',
@@ -41,10 +40,9 @@ if (isWindows) {
     PATH: expect,
     Path: expect,
   })
-
 } else {
   const setPATH = requireInject('../lib/set-path.js', {
-   path: require('path').posix,
+    path: require('path').posix,
   })
   t.strictSame(setPATH('/x/y/z/node_modules/a/node_modules/b', {
     foo: 'bar',
@@ -66,6 +64,6 @@ if (isWindows) {
       '/usr/bin:' +
       '/usr/sbin:' +
       '/bin:' +
-      '/sbin'
+      '/sbin',
   })
 }

@@ -7,7 +7,7 @@ if (!process.env.__FAKE_TESTING_PLATFORM__) {
   t.spawn(process.execPath, [__filename, fake], { env: {
     ...process.env,
     __FAKE_TESTING_PLATFORM__: fake,
-  }})
+  } })
 }
 
 const makeSpawnArgs = requireInject('../lib/make-spawn-args.js', {
@@ -24,7 +24,7 @@ if (isWindows) {
       cmd: 'script "quoted parameter"; second command',
     }), [
       'cmd',
-      [ '/d', '/s', '/c', `script \"quoted parameter\"; second command` ],
+      ['/d', '/s', '/c', `script "quoted parameter"; second command`],
       {
         env: {
           npm_package_json: /package\.json$/,
@@ -35,7 +35,7 @@ if (isWindows) {
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
-      }
+      },
     ])
 
     // with a funky ComSpec
@@ -46,17 +46,17 @@ if (isWindows) {
       cmd: 'script "quoted parameter"; second command',
     }), [
       'blrorp',
-      [ '-c', `script "quoted parameter"; second command` ],
+      ['-c', `script "quoted parameter"; second command`],
       {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script'
+          npm_lifecycle_script: 'script',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: undefined,
-      }
+      },
     ])
 
     t.match(makeSpawnArgs({
@@ -66,24 +66,22 @@ if (isWindows) {
       scriptShell: 'cmd.exe',
     }), [
       'cmd.exe',
-      [ '/d', '/s', '/c', `script \"quoted parameter\"; second command` ],
+      ['/d', '/s', '/c', `script "quoted parameter"; second command`],
       {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script'
+          npm_lifecycle_script: 'script',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
-      }
+      },
     ])
 
     t.end()
   })
-
 } else {
-
   t.test('posix', t => {
     t.match(makeSpawnArgs({
       event: 'event',
@@ -91,17 +89,17 @@ if (isWindows) {
       cmd: 'script "quoted parameter"; second command',
     }), [
       'sh',
-      [ '-c', `script "quoted parameter"; second command` ],
+      ['-c', `script "quoted parameter"; second command`],
       {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script'
+          npm_lifecycle_script: 'script',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: undefined,
-      }
+      },
     ])
 
     // test that we can explicitly run in cmd.exe, even on posix systems
@@ -113,17 +111,17 @@ if (isWindows) {
       scriptShell: 'cmd.exe',
     }), [
       'cmd.exe',
-      [ '/d', '/s', '/c', `script \"quoted parameter\"; second command` ],
+      ['/d', '/s', '/c', `script "quoted parameter"; second command`],
       {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script'
+          npm_lifecycle_script: 'script',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
-      }
+      },
     ])
 
     t.end()
