@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@npmcli/template-oss": "^2.7.1",
-    "minipass": "^3.1.1",
+    "minipass": "^3.1.6",
     "require-inject": "^1.4.4",
     "tap": "^15.0.4"
   },
