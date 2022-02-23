@@ -25,7 +25,7 @@
     "@npmcli/template-oss": "^2.7.1",
     "minipass": "^3.1.6",
     "require-inject": "^1.4.4",
-    "tap": "^15.0.4"
+    "tap": "^15.1.6"
   },
   "dependencies": {
     "@npmcli/node-gyp": "^1.0.3",
