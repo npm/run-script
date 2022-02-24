@@ -22,7 +22,7 @@
     "coverage-map": "map.js"
   },
   "devDependencies": {
-    "@npmcli/template-oss": "^2.7.1",
+    "@npmcli/template-oss": "^2.8.1",
     "minipass": "^3.1.6",
     "require-inject": "^1.4.4",
     "tap": "^15.1.6"
@@ -46,6 +46,6 @@
     "node": "^12.13.0 || ^14.15.0 || >=16"
   },
   "templateOSS": {
-    "version": "2.7.1"
+    "version": "2.8.1"
   }
 }
