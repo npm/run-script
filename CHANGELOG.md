@@ -1,5 +1,12 @@
 # Changelog
 
+### [3.0.1](https://www.github.com/npm/run-script/compare/v3.0.0...v3.0.1) (2022-03-02)
+
+
+### Dependencies
+
+* bump node-gyp from 8.4.1 to 9.0.0 ([#52](https://www.github.com/npm/run-script/issues/52)) ([148ce21](https://www.github.com/npm/run-script/commit/148ce213fd7b208295dfa743b5bbf6f2032f22ce))
+
 ## [3.0.0](https://www.github.com/npm/run-script/compare/v2.0.0...v3.0.0) (2022-02-23)
 
 
