@@ -7,7 +7,7 @@ let SIGNAL = null
 const EXIT_CODE = 0
 
 const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
-  '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
+  '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd, ...options.cmdargs], options],
   '@npmcli/promise-spawn': (...args) => {
     const p = SIGNAL || EXIT_CODE
       ? Promise.reject(Object.assign(new Error('test command failed'), {
@@ -64,6 +64,7 @@ t.test('pkg has server.js, start not specified', async t => {
     },
     stdio: 'pipe',
     cmd: 'node server.js',
+    cmdargs: [],
   }, {
     event: 'start',
     script: 'node server.js',
@@ -81,14 +82,14 @@ t.test('pkg has server.js, start not specified, with args', async t => {
     env: {
       environ: 'value',
     },
-    args: ['a', 'b', 'c'],
+    args: ['a', 'b\\S+b', 'c'],
     stdio: 'pipe',
     pkg: {
       _id: 'foo@1.2.3',
       scripts: {},
     },
   })
-  t.strictSame(res, ['sh', ['-c', 'node server.js "a" "b" "c"'], {
+  t.strictSame(res, ['sh', ['-c', 'node server.js', 'a', 'b\\S+b', 'c'], {
     stdioString: false,
     event: 'start',
     path,
@@ -97,10 +98,11 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       environ: 'value',
     },
     stdio: 'pipe',
-    cmd: 'node server.js "a" "b" "c"',
+    cmd: 'node server.js',
+    cmdargs: ['a', 'b\\S+b', 'c'],
   }, {
     event: 'start',
-    script: 'node server.js "a" "b" "c"',
+    script: 'node server.js "a" "b\\\\S+b" "c"',
     pkgid: 'foo@1.2.3',
     path,
   }])
@@ -134,6 +136,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   },
   stdio: 'pipe',
   cmd: 'bar',
+  cmdargs: [],
 }, {
   event: 'foo',
   script: 'bar',
@@ -169,6 +172,7 @@ t.test('do the banner when stdio is inherited, handle line breaks', t => {
     },
     stdio: 'inherit',
     cmd: 'bar\nbaz\n',
+    cmdargs: [],
   }, {
     event: 'foo',
     script: 'bar\nbaz\n',
@@ -206,6 +210,7 @@ t.test('do not show banner when stdio is inherited, if suppressed', t => {
     },
     stdio: 'inherit',
     cmd: 'bar',
+    cmdargs: [],
   }, {
     event: 'foo',
     script: 'bar',
@@ -241,6 +246,7 @@ t.test('do the banner with no pkgid', t => {
     },
     stdio: 'inherit',
     cmd: 'bar',
+    cmdargs: [],
   }, {
     event: 'foo',
     script: 'bar',
@@ -273,6 +279,7 @@ t.test('pkg has foo script', t => runScriptPkg({
   },
   stdio: 'pipe',
   cmd: 'bar',
+  cmdargs: [],
 }, {
   event: 'foo',
   script: 'bar',
@@ -294,8 +301,8 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
       foo: 'bar',
     },
   },
-  args: ['a', 'b', 'c'],
-}).then(res => t.strictSame(res, ['sh', ['-c', 'bar "a" "b" "c"'], {
+  args: ['a', 'b', 'c\\sc'],
+}).then(res => t.strictSame(res, ['sh', ['-c', 'bar', 'a', 'b', 'c\\sc'], {
   stdioString: false,
   event: 'foo',
   path: 'path',
@@ -304,10 +311,11 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
     environ: 'value',
   },
   stdio: 'pipe',
-  cmd: 'bar "a" "b" "c"',
+  cmd: 'bar',
+  cmdargs: ['a', 'b', 'c\\sc'],
 }, {
   event: 'foo',
-  script: 'bar "a" "b" "c"',
+  script: 'bar "a" "b" "c\\\\sc"',
   pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
@@ -340,6 +348,7 @@ t.test('pkg has no install or preinstall script, but node-gyp files are present'
       env: { environ: 'value' },
       stdio: 'pipe',
       cmd: 'node-gyp rebuild',
+      cmdargs: [],
       stdioString: false,
     },
     {
