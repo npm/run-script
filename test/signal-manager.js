@@ -50,9 +50,9 @@ test('forwards signals to child process', t => {
   proc.kill = (signal) => {
     t.equal(signal, signalManager.forwardedSignals[0], 'child receives correct signal')
     proc.emit('exit', 0)
-    for (const signal of signalManager.forwardedSignals) {
+    for (const forwarded of signalManager.forwardedSignals) {
       t.equal(
-        process.listeners(signal).includes(signalManager.handleSignal),
+        process.listeners(forwarded).includes(signalManager.handleSignal),
         false, 'listener has been removed')
     }
     t.end()

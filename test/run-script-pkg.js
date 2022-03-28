@@ -375,7 +375,7 @@ t.test('pkg has no install or preinstall script, but gypfile:false', async t => 
 
 t.test('end stdin if present', async t => {
   let stdinEnded = false
-  const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
+  const rspWithEndedStdin = requireInject('../lib/run-script-pkg.js', {
     '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
     '@npmcli/promise-spawn': (...args) => {
       const p = Promise.resolve(args)
@@ -384,7 +384,7 @@ t.test('end stdin if present', async t => {
       return p
     },
   })
-  await t.resolveMatch(runScriptPkg({
+  await t.resolveMatch(rspWithEndedStdin({
     event: 'cat',
     path: 'path',
     stdin: { end: () => t.end() },
