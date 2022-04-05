@@ -1,5 +1,13 @@
 # Changelog
 
+### [3.0.2](https://github.com/npm/run-script/compare/v3.0.1...v3.0.2) (2022-04-05)
+
+
+### Dependencies
+
+* bump @npmcli/node-gyp from 1.0.3 to 2.0.0 ([#65](https://github.com/npm/run-script/issues/65)) ([731240d](https://github.com/npm/run-script/commit/731240d641418478f5ceb86566dc2f48f5ec0975))
+* bump @npmcli/promise-spawn from 1.3.2 to 3.0.0 ([#67](https://github.com/npm/run-script/issues/67)) ([afcab18](https://github.com/npm/run-script/commit/afcab182f0b9264f847e4911fc3d516d25efa195))
+
 ### [3.0.1](https://www.github.com/npm/run-script/compare/v3.0.0...v3.0.1) (2022-03-02)
 
 
