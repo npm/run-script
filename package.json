@@ -31,7 +31,7 @@
   "dependencies": {
     "@npmcli/node-gyp": "^2.0.0",
     "@npmcli/promise-spawn": "^3.0.0",
-    "node-gyp": "^9.0.0",
+    "node-gyp": "^8.4.1",
     "read-package-json-fast": "^2.0.3"
   },
   "files": [
