@@ -1,5 +1,12 @@
 # Changelog
 
+### [3.0.3](https://github.com/npm/run-script/compare/v3.0.2...v3.0.3) (2022-05-25)
+
+
+### Dependencies
+
+* node-gyp@8.4.1 ([#73](https://github.com/npm/run-script/issues/73)) ([c4c472f](https://github.com/npm/run-script/commit/c4c472f1d500f3b854dd73899a08071ffec86d3e))
+
 ### [3.0.2](https://github.com/npm/run-script/compare/v3.0.1...v3.0.2) (2022-04-05)
 
 
