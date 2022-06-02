@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/npm/run-script/compare/v3.0.3...v4.0.0) (2022-06-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* changes engines support to `^12.22 || ^14.13 || >=16`
+
+### Dependencies
+
+* bump node-gyp from 8.4.1 to 9.0.0 ([#76](https://github.com/npm/run-script/issues/76)) ([e62e3a5](https://github.com/npm/run-script/commit/e62e3a5edc30e8216e43183c195927143ebc35ea))
+
 ### [3.0.3](https://github.com/npm/run-script/compare/v3.0.2...v3.0.3) (2022-05-25)
 
 
