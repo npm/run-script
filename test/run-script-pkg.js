@@ -59,6 +59,7 @@ t.test('pkg has server.js, start not specified', async t => {
     event: 'start',
     path,
     scriptShell: 'sh',
+    args: [],
     env: {
       environ: 'value',
     },
@@ -88,7 +89,7 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       scripts: {},
     },
   })
-  t.strictSame(res, ['sh', ['-c', 'node server.js "a" "b" "c"'], {
+  t.strictSame(res, ['sh', ['-c', 'node server.js'], {
     stdioString: false,
     event: 'start',
     path,
@@ -97,10 +98,11 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       environ: 'value',
     },
     stdio: 'pipe',
-    cmd: 'node server.js "a" "b" "c"',
+    cmd: 'node server.js',
+    args: ['a', 'b', 'c'],
   }, {
     event: 'start',
-    script: 'node server.js "a" "b" "c"',
+    script: 'node server.js',
     pkgid: 'foo@1.2.3',
     path,
   }])
@@ -129,6 +131,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
+  args: [],
   env: {
     environ: 'value',
   },
@@ -164,6 +167,7 @@ t.test('do the banner when stdio is inherited, handle line breaks', t => {
     event: 'foo',
     path: 'path',
     scriptShell: 'sh',
+    args: [],
     env: {
       environ: 'value',
     },
@@ -201,6 +205,7 @@ t.test('do not show banner when stdio is inherited, if suppressed', t => {
     event: 'foo',
     path: 'path',
     scriptShell: 'sh',
+    args: [],
     env: {
       environ: 'value',
     },
@@ -236,6 +241,7 @@ t.test('do the banner with no pkgid', t => {
     event: 'foo',
     path: 'path',
     scriptShell: 'sh',
+    args: [],
     env: {
       environ: 'value',
     },
@@ -268,6 +274,7 @@ t.test('pkg has foo script', t => runScriptPkg({
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
+  args: [],
   env: {
     environ: 'value',
   },
@@ -295,19 +302,20 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
     },
   },
   args: ['a', 'b', 'c'],
-}).then(res => t.strictSame(res, ['sh', ['-c', 'bar "a" "b" "c"'], {
+}).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
   stdioString: false,
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
+  args: ['a', 'b', 'c'],
   env: {
     environ: 'value',
   },
   stdio: 'pipe',
-  cmd: 'bar "a" "b" "c"',
+  cmd: 'bar',
 }, {
   event: 'foo',
-  script: 'bar "a" "b" "c"',
+  script: 'bar',
   pkgid: 'foo@1.2.3',
   path: 'path',
 }])))
@@ -337,6 +345,7 @@ t.test('pkg has no install or preinstall script, but node-gyp files are present'
       event: 'install',
       path: 'path',
       scriptShell: 'sh',
+      args: [],
       env: { environ: 'value' },
       stdio: 'pipe',
       cmd: 'node-gyp rebuild',
