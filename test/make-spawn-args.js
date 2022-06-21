@@ -60,14 +60,16 @@ if (isWindows) {
     t.teardown(() => {
       whichPaths.delete('cmd')
     })
-    t.match(makeSpawnArgs({
-      event: 'event',
-      path: 'path',
-      cmd: 'script "quoted parameter"; second command',
-    }), [
-      'cmd',
-      ['/d', '/s', '/c', /\.cmd$/],
-      {
+
+    t.test('simple script', (t) => {
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script "quoted parameter"; second command',
+      })
+      t.equal(shell, 'cmd', 'default shell applies')
+      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
@@ -77,23 +79,29 @@ if (isWindows) {
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
-      },
-    ])
+      }, 'got expected options')
 
-    // with a funky ComSpec
-    process.env.ComSpec = 'blrorp'
-    whichPaths.set('blrorp', '/bin/blrorp')
-    t.teardown(() => {
-      whichPaths.delete('blrorp')
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
     })
-    t.match(makeSpawnArgs({
-      event: 'event',
-      path: 'path',
-      cmd: 'script "quoted parameter"; second command',
-    }), [
-      'blrorp',
-      ['-c', /\.sh$/],
-      {
+
+    t.test('with a funky ComSpec', (t) => {
+      process.env.ComSpec = 'blrorp'
+      whichPaths.set('blrorp', '/bin/blrorp')
+      t.teardown(() => {
+        whichPaths.delete('blrorp')
+      })
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script "quoted parameter"; second command',
+      })
+      t.equal(shell, 'blrorp', 'used ComSpec as default shell')
+      t.match(args, ['-c', /\.sh$/], 'got expected args')
+      t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
@@ -102,19 +110,26 @@ if (isWindows) {
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: undefined,
-      },
-    ])
+      }, 'got expected options')
 
-    t.match(makeSpawnArgs({
-      event: 'event',
-      path: 'path',
-      cmd: 'script',
-      args: ['"quoted parameter";', 'second command'],
-      scriptShell: 'cmd.exe',
-    }), [
-      'cmd.exe',
-      ['/d', '/s', '/c', /\.cmd$/],
-      {
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
+
+    t.test('with cmd.exe as scriptShell', (t) => {
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script',
+        args: ['"quoted parameter";', 'second command'],
+        scriptShell: 'cmd.exe',
+      })
+      t.equal(shell, 'cmd.exe', 'kept cmd.exe')
+      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
@@ -123,8 +138,14 @@ if (isWindows) {
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
-      },
-    ])
+      }, 'got expected options')
+
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
 
     t.end()
   })
@@ -134,15 +155,17 @@ if (isWindows) {
     t.teardown(() => {
       whichPaths.delete('sh')
     })
-    t.match(makeSpawnArgs({
-      event: 'event',
-      path: 'path',
-      cmd: 'script',
-      args: ['"quoted parameter";', 'second command'],
-    }), [
-      'sh',
-      ['-c', /\.sh$/],
-      {
+
+    t.test('simple script', (t) => {
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script',
+        args: ['"quoted parameter";', 'second command'],
+      })
+      t.equal(shell, 'sh', 'defaults to sh')
+      t.match(args, ['-c', /\.sh$/], 'got expected args')
+      t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
@@ -151,20 +174,27 @@ if (isWindows) {
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: undefined,
-      },
-    ])
+      }, 'got expected options')
 
-    // test that we can explicitly run in cmd.exe, even on posix systems
-    // relevant for running under WSL
-    t.match(makeSpawnArgs({
-      event: 'event',
-      path: 'path',
-      cmd: 'script "quoted parameter"; second command',
-      scriptShell: 'cmd.exe',
-    }), [
-      'cmd.exe',
-      ['/d', '/s', '/c', /\.cmd$/],
-      {
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
+
+    t.test('can use cmd.exe', (t) => {
+      // test that we can explicitly run in cmd.exe, even on posix systems
+      // relevant for running under WSL
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script "quoted parameter"; second command',
+        scriptShell: 'cmd.exe',
+      })
+      t.equal(shell, 'cmd.exe', 'kept cmd.exe')
+      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
           npm_lifecycle_event: 'event',
@@ -173,8 +203,14 @@ if (isWindows) {
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
-      },
-    ])
+      }, 'got expected options')
+
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
 
     t.end()
   })
