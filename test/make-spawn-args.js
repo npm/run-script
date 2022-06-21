@@ -81,6 +81,9 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
+      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      // the contents will have a trailing space if no args are passed
+      t.equal(contents, `@echo off\nscript "quoted parameter"; second command `)
       t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
       cleanup()
       t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
@@ -93,6 +96,7 @@ if (isWindows) {
       whichPaths.set('blrorp', '/bin/blrorp')
       t.teardown(() => {
         whichPaths.delete('blrorp')
+        delete process.env.ComSpec
       })
       const [shell, args, opts, cleanup] = makeSpawnArgs({
         event: 'event',
@@ -147,6 +151,114 @@ if (isWindows) {
       t.end()
     })
 
+    t.test('single escapes when initial command is not a batch file', (t) => {
+      whichPaths.set('script', '/path/script.exe')
+      t.teardown(() => whichPaths.delete('script'))
+
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script',
+        args: ['"quoted parameter";', 'second command'],
+      })
+      t.equal(shell, 'cmd', 'default shell applies')
+      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(opts, {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script',
+          npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: true,
+      }, 'got expected options')
+
+      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      t.equal(contents, `@echo off\nscript ^"\\^"quoted parameter\\^";^" ^"second command^"`)
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
+
+    t.test('double escapes when initial command is a batch file', (t) => {
+      whichPaths.set('script', '/path/script.cmd')
+      t.teardown(() => whichPaths.delete('script'))
+
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script',
+        args: ['"quoted parameter";', 'second command'],
+      })
+      t.equal(shell, 'cmd', 'default shell applies')
+      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(opts, {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script',
+          npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: true,
+      }, 'got expected options')
+
+      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      t.equal(contents, [
+        '@echo off',
+        `script ^^^"\\^^^"quoted parameter\\^^^";^^^" ^^^"second command^^^"`,
+      ].join('\n'))
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
+
+    t.test('correctly identifies initial cmd with spaces', (t) => {
+      // we do blind lookups in our test fixture here, however node-which
+      // will remove surrounding quotes
+      whichPaths.set('"my script"', '/path/script.cmd')
+      t.teardown(() => whichPaths.delete('my script'))
+
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: '"my script"',
+        args: ['"quoted parameter";', 'second command'],
+      })
+      t.equal(shell, 'cmd', 'default shell applies')
+      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(opts, {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script',
+          npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: true,
+      }, 'got expected options')
+
+      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      t.equal(contents, [
+        '@echo off',
+        // eslint-disable-next-line max-len
+        `"my script" ^^^"\\^^^"quoted parameter\\^^^";^^^" ^^^"second command^^^"`,
+      ].join('\n'))
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
+
     t.end()
   })
 } else {
@@ -176,6 +288,38 @@ if (isWindows) {
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
+      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      t.equal(contents, `#!/usr/bin/env sh\nscript '"quoted parameter";' 'second command'`)
+      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+
+      t.end()
+    })
+
+    t.test('skips /usr/bin/env if scriptShell is absolute', (t) => {
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event',
+        path: 'path',
+        cmd: 'script',
+        args: ['"quoted parameter";', 'second command'],
+        scriptShell: '/bin/sh',
+      })
+      t.equal(shell, '/bin/sh', 'kept provided setting')
+      t.match(args, ['-c', /\.sh$/], 'got expected args')
+      t.match(opts, {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script',
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: undefined,
+      }, 'got expected options')
+
+      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      t.equal(contents, `#!/bin/sh\nscript '"quoted parameter";' 'second command'`)
       t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
       cleanup()
       t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
