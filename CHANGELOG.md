@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.1.0](https://github.com/npm/run-script/compare/v4.0.0...v4.1.0) (2022-06-21)
+
+
+### Features
+
+* write scripts to a file and run that instead of passing scripts as a single string ([24c5165](https://github.com/npm/run-script/commit/24c5165e44846f4cf97b90fddfea5471600247f6))
+
+
+### Bug Fixes
+
+* cleanup temp script after running ([7963ab5](https://github.com/npm/run-script/commit/7963ab5f6256fe5e51b7656282499bd7fa19add6))
+
 ## [4.0.0](https://github.com/npm/run-script/compare/v3.0.3...v4.0.0) (2022-06-02)
 
 
