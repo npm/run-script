@@ -147,3 +147,14 @@ Functionally, this means:
   hook scripts, then they can override the default package script with an
   explicit `cmd` option pointing to the `node_modules/.hook/${event}`
   script.
+
+## Escaping
+
+In order to ensure that arguments are handled consistently, this module
+writes a temporary script file containing the command as it exists in
+the package.json, followed by the user supplied arguments having been
+escaped to ensure they are processed as literal strings. We then instruct
+the shell to execute the script file, and when the process exits we remove
+the temporary file.
+
+The actual implementation of the escaping is in `lib/escape.js`.
