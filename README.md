@@ -157,4 +157,8 @@ escaped to ensure they are processed as literal strings. We then instruct
 the shell to execute the script file, and when the process exits we remove
 the temporary file.
 
+In Windows, when the shell is cmd, and when the initial command in the script
+is a known batch file (i.e. `something.cmd`) we double escape additional
+arguments so that the shim scripts npm installs work correctly.
+
 The actual implementation of the escaping is in `lib/escape.js`.
