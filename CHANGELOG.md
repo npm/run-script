@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/npm/run-script/compare/v4.1.0...v4.1.1) (2022-06-22)
+
+
+### Bug Fixes
+
+* correctly double escape when script runs a known .cmd file ([#80](https://github.com/npm/run-script/issues/80)) ([0f613cd](https://github.com/npm/run-script/commit/0f613cd1bed4d5f04e91da89ac747a3a00083146))
+
 ## [4.1.0](https://github.com/npm/run-script/compare/v4.0.0...v4.1.0) (2022-06-21)
 
 
