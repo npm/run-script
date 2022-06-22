@@ -82,8 +82,7 @@ if (isWindows) {
       }, 'got expected options')
 
       const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
-      // the contents will have a trailing space if no args are passed
-      t.equal(contents, `@echo off\nscript "quoted parameter"; second command `)
+      t.equal(contents, `@echo off\nscript "quoted parameter"; second command`)
       t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
       cleanup()
       t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
