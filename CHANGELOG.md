@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.2](https://github.com/npm/run-script/compare/v4.1.1...v4.1.2) (2022-06-22)
+
+
+### Bug Fixes
+
+* remove extraneous space when no additional args are passed ([#82](https://github.com/npm/run-script/issues/82)) ([9e09bab](https://github.com/npm/run-script/commit/9e09babbc662e25631b15ea7e8e33e0fd331eee5))
+
 ## [4.1.1](https://github.com/npm/run-script/compare/v4.1.0...v4.1.1) (2022-06-22)
 
 
