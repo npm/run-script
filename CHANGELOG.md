@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.3](https://github.com/npm/run-script/compare/v4.1.2...v4.1.3) (2022-06-23)
+
+
+### Bug Fixes
+
+* escape spaces in cmd scripts too ([#84](https://github.com/npm/run-script/issues/84)) ([0bca5be](https://github.com/npm/run-script/commit/0bca5be97ff14e33d6e984e8c48bf35e3e6512ee))
+
 ## [4.1.2](https://github.com/npm/run-script/compare/v4.1.1...v4.1.2) (2022-06-22)
 
 
