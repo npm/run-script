@@ -23,7 +23,18 @@ const which = {
 }
 
 const path = require('path')
-const tmpdir = path.resolve(t.testdir())
+// we make our fake temp dir contain spaces for extra safety in paths with spaces
+const tmpdir = path.resolve(t.testdir({ 'with spaces': {} }), 'with spaces')
+
+// used for unescaping windows path to script file
+const unescapeCmd = (input) => input
+  .replace(/^\^"/, '')
+  .replace(/\^"$/, '')
+  .replace(/\^(.)/g, '$1')
+
+const unescapeSh = (input) => input
+  .replace(/^'/, '')
+  .replace(/'$/, '')
 
 const makeSpawnArgs = requireInject('../lib/make-spawn-args.js', {
   fs: {
@@ -68,7 +79,7 @@ if (isWindows) {
         cmd: 'script "quoted parameter"; second command',
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -81,11 +92,12 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
-      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      const filename = unescapeCmd(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
       t.equal(contents, `@echo off\nscript "quoted parameter"; second command`)
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -103,7 +115,7 @@ if (isWindows) {
         cmd: 'script "quoted parameter"; second command',
       })
       t.equal(shell, 'blrorp', 'used ComSpec as default shell')
-      t.match(args, ['-c', /\.sh$/], 'got expected args')
+      t.match(args, ['-c', /\.sh'$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -115,9 +127,10 @@ if (isWindows) {
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      const filename = unescapeSh(args[args.length - 1])
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -131,7 +144,7 @@ if (isWindows) {
         scriptShell: 'cmd.exe',
       })
       t.equal(shell, 'cmd.exe', 'kept cmd.exe')
-      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -143,9 +156,10 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      const filename = unescapeCmd(args[args.length - 1])
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -161,7 +175,7 @@ if (isWindows) {
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -174,11 +188,12 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
-      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
-      t.equal(contents, `@echo off\nscript ^"\\^"quoted parameter\\^";^" ^"second command^"`)
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      const filename = unescapeCmd(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
+      t.equal(contents, `@echo off\nscript ^"\\^"quoted^ parameter\\^";^" ^"second^ command^"`)
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -194,7 +209,7 @@ if (isWindows) {
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -207,14 +222,15 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
-      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      const filename = unescapeCmd(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
       t.equal(contents, [
         '@echo off',
-        `script ^^^"\\^^^"quoted parameter\\^^^";^^^" ^^^"second command^^^"`,
+        `script ^^^"\\^^^"quoted^^^ parameter\\^^^";^^^" ^^^"second^^^ command^^^"`,
       ].join('\n'))
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -232,7 +248,7 @@ if (isWindows) {
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -245,15 +261,16 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
-      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      const filename = unescapeCmd(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
       t.equal(contents, [
         '@echo off',
         // eslint-disable-next-line max-len
-        `"my script" ^^^"\\^^^"quoted parameter\\^^^";^^^" ^^^"second command^^^"`,
+        `"my script" ^^^"\\^^^"quoted^^^ parameter\\^^^";^^^" ^^^"second^^^ command^^^"`,
       ].join('\n'))
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -275,7 +292,7 @@ if (isWindows) {
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'sh', 'defaults to sh')
-      t.match(args, ['-c', /\.sh$/], 'got expected args')
+      t.match(args, ['-c', /\.sh'$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -287,11 +304,12 @@ if (isWindows) {
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
-      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      const filename = unescapeSh(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
       t.equal(contents, `#!/usr/bin/env sh\nscript '"quoted parameter";' 'second command'`)
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -305,7 +323,7 @@ if (isWindows) {
         scriptShell: '/bin/sh',
       })
       t.equal(shell, '/bin/sh', 'kept provided setting')
-      t.match(args, ['-c', /\.sh$/], 'got expected args')
+      t.match(args, ['-c', /\.sh'$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -317,11 +335,12 @@ if (isWindows) {
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
-      const contents = fs.readFileSync(args[args.length - 1], { encoding: 'utf8' })
+      const filename = unescapeSh(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
       t.equal(contents, `#!/bin/sh\nscript '"quoted parameter";' 'second command'`)
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -336,7 +355,7 @@ if (isWindows) {
         scriptShell: 'cmd.exe',
       })
       t.equal(shell, 'cmd.exe', 'kept cmd.exe')
-      t.match(args, ['/d', '/s', '/c', /\.cmd$/], 'got expected args')
+      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -348,9 +367,10 @@ if (isWindows) {
         windowsVerbatimArguments: true,
       }, 'got expected options')
 
-      t.ok(fs.existsSync(args[args.length - 1]), 'script file was written')
+      const filename = unescapeCmd(args[args.length - 1])
+      t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
-      t.not(fs.existsSync(args[args.length - 1]), 'cleanup removes script file')
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
