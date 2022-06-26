@@ -17,10 +17,6 @@
     "posttest": "npm run lint",
     "template-oss-apply": "template-oss-apply --force"
   },
-  "tap": {
-    "check-coverage": true,
-    "coverage-map": "map.js"
-  },
   "devDependencies": {
     "@npmcli/eslint-config": "^3.0.1",
     "@npmcli/template-oss": "3.5.0",
