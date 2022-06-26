@@ -102,6 +102,39 @@ if (isWindows) {
       t.end()
     })
 
+    t.test('event with invalid characters runs', (t) => {
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event<:>\x03', // everything after the word "event" is invalid
+        path: 'path',
+        cmd: 'script "quoted parameter"; second command',
+      })
+      t.equal(shell, 'cmd', 'default shell applies')
+      // disabling no-control-regex because we are testing specifically if the control
+      // character gets removed
+      // eslint-disable-next-line no-control-regex
+      t.match(args, ['/d', '/s', '/c', /(?:\\|\/)[^<:>\x03]+.cmd\^"$/], 'got expected args')
+      t.match(opts, {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script',
+          npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: true,
+      }, 'got expected options')
+
+      const filename = unescapeCmd(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
+      t.equal(contents, `@echo off\nscript "quoted parameter"; second command`)
+      t.ok(fs.existsSync(filename), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
+
+      t.end()
+    })
+
     t.test('with a funky ComSpec', (t) => {
       process.env.ComSpec = 'blrorp'
       whichPaths.set('blrorp', '/bin/blrorp')
@@ -293,6 +326,38 @@ if (isWindows) {
       })
       t.equal(shell, 'sh', 'defaults to sh')
       t.match(args, ['-c', /\.sh'$/], 'got expected args')
+      t.match(opts, {
+        env: {
+          npm_package_json: /package\.json$/,
+          npm_lifecycle_event: 'event',
+          npm_lifecycle_script: 'script',
+        },
+        stdio: undefined,
+        cwd: 'path',
+        windowsVerbatimArguments: undefined,
+      }, 'got expected options')
+
+      const filename = unescapeSh(args[args.length - 1])
+      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
+      t.equal(contents, `#!/usr/bin/env sh\nscript '"quoted parameter";' 'second command'`)
+      t.ok(fs.existsSync(filename), 'script file was written')
+      cleanup()
+      t.not(fs.existsSync(filename), 'cleanup removes script file')
+
+      t.end()
+    })
+
+    t.test('event with invalid characters runs', (t) => {
+      const [shell, args, opts, cleanup] = makeSpawnArgs({
+        event: 'event<:>/\x04',
+        path: 'path',
+        cmd: 'script',
+        args: ['"quoted parameter";', 'second command'],
+      })
+      t.equal(shell, 'sh', 'defaults to sh')
+      // no-control-regex disabled because we're specifically testing control chars
+      // eslint-disable-next-line no-control-regex
+      t.match(args, ['-c', /(?:\\|\/)[^<:>/\x04]+\.sh'$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
