@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.4](https://github.com/npm/run-script/compare/v4.1.3...v4.1.4) (2022-06-27)
+
+
+### Bug Fixes
+
+* remove invalid characters from filename ([#86](https://github.com/npm/run-script/issues/86)) ([2354d06](https://github.com/npm/run-script/commit/2354d064e6ef833d9797bf70c333455f075d1b3b))
+
 ## [4.1.3](https://github.com/npm/run-script/compare/v4.1.2...v4.1.3) (2022-06-23)
 
 
