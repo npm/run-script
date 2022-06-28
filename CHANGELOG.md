@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.5](https://github.com/npm/run-script/compare/v4.1.4...v4.1.5) (2022-06-28)
+
+
+### Bug Fixes
+
+* add which to dependencies ([#88](https://github.com/npm/run-script/issues/88)) ([0bc2eec](https://github.com/npm/run-script/commit/0bc2eec2ccf6a9007e0fe9ea8200b2b12f847bfd))
+
 ## [4.1.4](https://github.com/npm/run-script/compare/v4.1.3...v4.1.4) (2022-06-27)
 
 
