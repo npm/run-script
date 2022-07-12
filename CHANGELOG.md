@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.7](https://github.com/npm/run-script/compare/v4.1.6...v4.1.7) (2022-07-12)
+
+
+### Bug Fixes
+
+* correctly translate paths when using bash in windows ([#96](https://github.com/npm/run-script/issues/96)) ([756ff56](https://github.com/npm/run-script/commit/756ff56d663f8a3634a7f48c17a2264295b51ccb))
+
 ## [4.1.6](https://github.com/npm/run-script/compare/v4.1.5...v4.1.6) (2022-07-12)
 
 
