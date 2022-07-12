@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.1.6](https://github.com/npm/run-script/compare/v4.1.5...v4.1.6) (2022-07-12)
+
+
+### Bug Fixes
+
+* tighten up the character set that will be removed ([#93](https://github.com/npm/run-script/issues/93)) ([d510209](https://github.com/npm/run-script/commit/d5102099d651ba31566e2f79f09f689fa16fcef3))
+* unique filename for temporary script files ([#95](https://github.com/npm/run-script/issues/95)) ([9f93025](https://github.com/npm/run-script/commit/9f930253c755a80435e8d47a7e086ff0ab8f03d2))
+
 ## [4.1.5](https://github.com/npm/run-script/compare/v4.1.4...v4.1.5) (2022-06-28)
 
 
