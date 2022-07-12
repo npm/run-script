@@ -148,7 +148,7 @@ if (isWindows) {
         cmd: 'script "quoted parameter"; second command',
       })
       t.equal(shell, 'blrorp', 'used ComSpec as default shell')
-      t.match(args, ['-c', /\.sh'$/], 'got expected args')
+      t.match(args, [/\.sh$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -160,7 +160,10 @@ if (isWindows) {
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
-      const filename = unescapeSh(args[args.length - 1])
+      let filename = unescapeSh(args[args.length - 1])
+      if (process.platform === 'win32') {
+        filename = filename.replace(/^\/([A-z])/, '$1:')
+      }
       t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
       t.not(fs.existsSync(filename), 'cleanup removes script file')
@@ -325,7 +328,7 @@ if (isWindows) {
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'sh', 'defaults to sh')
-      t.match(args, ['-c', /\.sh'$/], 'got expected args')
+      t.match(args, [/\.sh$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -339,7 +342,7 @@ if (isWindows) {
 
       const filename = unescapeSh(args[args.length - 1])
       const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `#!/usr/bin/env sh\nscript '"quoted parameter";' 'second command'`)
+      t.equal(contents, `script '"quoted parameter";' 'second command'`)
       t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
       t.not(fs.existsSync(filename), 'cleanup removes script file')
@@ -357,7 +360,7 @@ if (isWindows) {
       t.equal(shell, 'sh', 'defaults to sh')
       // no-control-regex disabled because we're specifically testing control chars
       // eslint-disable-next-line no-control-regex
-      t.match(args, ['-c', /(?:\\|\/)[^<:>/\x04]+\.sh'$/], 'got expected args')
+      t.match(args, [/(?:\\|\/)[^<:>/\x04]+\.sh$/], 'got expected args')
       t.match(opts, {
         env: {
           npm_package_json: /package\.json$/,
@@ -371,38 +374,7 @@ if (isWindows) {
 
       const filename = unescapeSh(args[args.length - 1])
       const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `#!/usr/bin/env sh\nscript '"quoted parameter";' 'second command'`)
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
-
-      t.end()
-    })
-
-    t.test('skips /usr/bin/env if scriptShell is absolute', (t) => {
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
-        event: 'event',
-        path: 'path',
-        cmd: 'script',
-        args: ['"quoted parameter";', 'second command'],
-        scriptShell: '/bin/sh',
-      })
-      t.equal(shell, '/bin/sh', 'kept provided setting')
-      t.match(args, ['-c', /\.sh'$/], 'got expected args')
-      t.match(opts, {
-        env: {
-          npm_package_json: /package\.json$/,
-          npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script',
-        },
-        stdio: undefined,
-        cwd: 'path',
-        windowsVerbatimArguments: undefined,
-      }, 'got expected options')
-
-      const filename = unescapeSh(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `#!/bin/sh\nscript '"quoted parameter";' 'second command'`)
+      t.equal(contents, `script '"quoted parameter";' 'second command'`)
       t.ok(fs.existsSync(filename), 'script file was written')
       cleanup()
       t.not(fs.existsSync(filename), 'cleanup removes script file')
