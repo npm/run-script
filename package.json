@@ -15,8 +15,7 @@
     "postlint": "template-oss-check",
     "snap": "tap",
     "posttest": "npm run lint",
-    "template-oss-apply": "template-oss-apply --force",
-    "foo": "echo \"a\nb\""
+    "template-oss-apply": "template-oss-apply --force"
   },
   "devDependencies": {
     "@npmcli/eslint-config": "^3.0.1",
