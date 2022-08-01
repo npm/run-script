@@ -17,6 +17,16 @@ runScript({
   // required, the folder where the package lives
   path: '/path/to/package/folder',
 
+  // optional, these paths will be put at the beginning of `$PATH`, even
+  // after run-script adds the node_modules/.bin folder(s) from
+  // `process.cwd()`. This is for commands like `npm init`, `npm exec`,
+  // and `npx` to make sure manually installed  packages come before
+  // anything that happens to be in the tree in `process.cwd()`.
+  binPaths: [
+    '/path/to/npx/node_modules/.bin',
+    '/path/to/npm/prefix/node_modules/.bin',
+  ]
+
   // optional, defaults to /bin/sh on unix, or cmd.exe on windows
   scriptShell: '/bin/bash',
 
