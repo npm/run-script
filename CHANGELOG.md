@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/npm/run-script/compare/v4.1.7...v4.2.0) (2022-08-01)
+
+
+### Features
+
+* add binPaths param ([#99](https://github.com/npm/run-script/issues/99)) ([27cc108](https://github.com/npm/run-script/commit/27cc108d1553170f4a274da608b44c8ad550037c))
+
 ## [4.1.7](https://github.com/npm/run-script/compare/v4.1.6...v4.1.7) (2022-07-12)
 
 
