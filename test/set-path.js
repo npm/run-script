@@ -1,69 +1,53 @@
 const t = require('tap')
-const requireInject = require('require-inject')
-const isWindows = require('../lib/is-windows.js')
+const { resolve, delimiter } = require('path').posix
 
-if (!process.env.__FAKE_TESTING_PLATFORM__) {
-  const fake = isWindows ? 'posix' : 'win32'
-  t.spawn(process.execPath, [__filename, fake], { env: {
-    ...process.env,
-    __FAKE_TESTING_PLATFORM__: fake,
-  } })
-}
+const setPATH = t.mock('../lib/set-path.js', {
+  // Always use posix path functions so tests are consistent
+  path: require('path').posix,
+})
 
-if (isWindows) {
-  const setPATH = requireInject('../lib/set-path.js', {
-    path: require('path').win32,
-  })
-  const expect = [
-    'c:\\x\\y\\z\\node_modules\\a\\node_modules\\b\\node_modules\\.bin',
-    'c:\\x\\y\\z\\node_modules\\a\\node_modules\\node_modules\\.bin',
-    'c:\\x\\y\\z\\node_modules\\a\\node_modules\\.bin',
-    'c:\\x\\y\\z\\node_modules\\node_modules\\.bin',
-    'c:\\x\\y\\z\\node_modules\\.bin',
-    'c:\\x\\y\\node_modules\\.bin',
-    'c:\\x\\node_modules\\.bin',
-    'c:\\node_modules\\.bin',
-    require('path').win32.resolve(__dirname, '../lib/node-gyp-bin'),
-    'c:\\usr\\local\\bin',
-    'c:\\usr\\local\\sbin',
-    'c:\\usr\\bin',
-    'c:\\usr\\sbin',
-    'c:\\bin',
-    'c:\\sbin',
-  ].join(';')
-  t.strictSame(setPATH('c:\\x\\y\\z\\node_modules\\a\\node_modules\\b', {
-    foo: 'bar',
-    PATH: 'c:\\usr\\local\\bin;c:\\usr\\local\\sbin',
-    Path: 'c:\\usr\\local\\bin;c:\\usr\\bin;c:\\usr\\sbin;c:\\bin;c:\\sbin',
-  }), {
-    foo: 'bar',
-    PATH: expect,
-    Path: expect,
-  })
-} else {
-  const setPATH = requireInject('../lib/set-path.js', {
-    path: require('path').posix,
-  })
-  t.strictSame(setPATH('/x/y/z/node_modules/a/node_modules/b', {
+const paths = [
+  '/x/y/z/node_modules/a/node_modules/b/node_modules/.bin',
+  '/x/y/z/node_modules/a/node_modules/node_modules/.bin',
+  '/x/y/z/node_modules/a/node_modules/.bin',
+  '/x/y/z/node_modules/node_modules/.bin',
+  '/x/y/z/node_modules/.bin',
+  '/x/y/node_modules/.bin',
+  '/x/node_modules/.bin',
+  '/node_modules/.bin',
+  resolve(__dirname, '../lib/node-gyp-bin'),
+  '/usr/local/bin',
+  '/usr/local/sbin',
+  '/usr/bin',
+  '/usr/sbin',
+  '/bin',
+  '/sbin',
+]
+t.test('no binPaths', async t => {
+  const projectPath = '/x/y/z/node_modules/a/node_modules/b'
+  t.strictSame(setPATH(projectPath, false, {
     foo: 'bar',
     PATH: '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin',
   }), {
     foo: 'bar',
-    PATH:
-      '/x/y/z/node_modules/a/node_modules/b/node_modules/.bin:' +
-      '/x/y/z/node_modules/a/node_modules/node_modules/.bin:' +
-      '/x/y/z/node_modules/a/node_modules/.bin:' +
-      '/x/y/z/node_modules/node_modules/.bin:' +
-      '/x/y/z/node_modules/.bin:' +
-      '/x/y/node_modules/.bin:' +
-      '/x/node_modules/.bin:' +
-      '/node_modules/.bin:' +
-      require('path').posix.resolve(__dirname, '../lib/node-gyp-bin') + ':' +
-      '/usr/local/bin:' +
-      '/usr/local/sbin:' +
-      '/usr/bin:' +
-      '/usr/sbin:' +
-      '/bin:' +
-      '/sbin',
+    PATH: paths.join(delimiter),
   })
-}
+})
+
+t.test('binPaths end up at beginning of PATH', async t => {
+  const projectPath = '/x/y/z/node_modules/a/node_modules/b'
+  const binPaths = [
+    '/q/r/s/node_modules/.bin',
+    '/t/u/v/node_modules/.bin',
+  ]
+  t.strictSame(setPATH(projectPath, binPaths, {
+    foo: 'bar',
+    PATH: '/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin',
+  }), {
+    foo: 'bar',
+    PATH: [
+      ...binPaths,
+      ...paths,
+    ].join(delimiter),
+  })
+})

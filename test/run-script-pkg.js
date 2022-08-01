@@ -60,6 +60,7 @@ t.test('pkg has server.js, start not specified', async t => {
     path,
     scriptShell: 'sh',
     args: [],
+    binPaths: false,
     env: {
       environ: 'value',
     },
@@ -83,6 +84,7 @@ t.test('pkg has server.js, start not specified, with args', async t => {
       environ: 'value',
     },
     args: ['a', 'b', 'c'],
+    binPaths: false,
     stdio: 'pipe',
     pkg: {
       _id: 'foo@1.2.3',
@@ -100,6 +102,7 @@ t.test('pkg has server.js, start not specified, with args', async t => {
     stdio: 'pipe',
     cmd: 'node server.js',
     args: ['a', 'b', 'c'],
+    binPaths: false,
   }, {
     event: 'start',
     script: 'node server.js',
@@ -132,6 +135,7 @@ t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
   path: 'path',
   scriptShell: 'sh',
   args: [],
+  binPaths: false,
   env: {
     environ: 'value',
   },
@@ -168,6 +172,7 @@ t.test('do the banner when stdio is inherited, handle line breaks', t => {
     path: 'path',
     scriptShell: 'sh',
     args: [],
+    binPaths: false,
     env: {
       environ: 'value',
     },
@@ -206,6 +211,7 @@ t.test('do not show banner when stdio is inherited, if suppressed', t => {
     path: 'path',
     scriptShell: 'sh',
     args: [],
+    binPaths: false,
     env: {
       environ: 'value',
     },
@@ -242,6 +248,7 @@ t.test('do the banner with no pkgid', t => {
     path: 'path',
     scriptShell: 'sh',
     args: [],
+    binPaths: false,
     env: {
       environ: 'value',
     },
@@ -275,6 +282,7 @@ t.test('pkg has foo script', t => runScriptPkg({
   path: 'path',
   scriptShell: 'sh',
   args: [],
+  binPaths: false,
   env: {
     environ: 'value',
   },
@@ -302,12 +310,14 @@ t.test('pkg has foo script, with args', t => runScriptPkg({
     },
   },
   args: ['a', 'b', 'c'],
+  binPaths: false,
 }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
   stdioString: false,
   event: 'foo',
   path: 'path',
   scriptShell: 'sh',
   args: ['a', 'b', 'c'],
+  binPaths: false,
   env: {
     environ: 'value',
   },
@@ -346,6 +356,7 @@ t.test('pkg has no install or preinstall script, but node-gyp files are present'
       path: 'path',
       scriptShell: 'sh',
       args: [],
+      binPaths: false,
       env: { environ: 'value' },
       stdio: 'pipe',
       cmd: 'node-gyp rebuild',
