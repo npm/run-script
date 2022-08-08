@@ -1,5 +1,4 @@
 const t = require('tap')
-const fs = require('fs')
 const requireInject = require('require-inject')
 const isWindows = require('../lib/is-windows.js')
 
@@ -22,44 +21,17 @@ const which = {
   },
 }
 
-const path = require('path')
-// we make our fake temp dir contain spaces for extra safety in paths with spaces
-const tmpdir = path.resolve(t.testdir({ 'with spaces': {} }), 'with spaces')
-
-// used for unescaping windows path to script file
-const unescapeCmd = (input) => input
-  .replace(/^\^"/, '')
-  .replace(/\^"$/, '')
-  .replace(/\^(.)/g, '$1')
-
-const unescapeSh = (input) => input
-  .replace(/^'/, '')
-  .replace(/'$/, '')
+const { dirname } = require('path')
+const resolve = (...args) => {
+  const root = isWindows ? 'C:\\Temp' : '/tmp'
+  return [root, ...args].join(isWindows ? '\\' : '/')
+}
 
 const makeSpawnArgs = requireInject('../lib/make-spawn-args.js', {
-  fs: {
-    ...fs,
-    chmodSync (_path, mode) {
-      if (process.platform === 'win32') {
-        _path = _path.replace(/\//g, '\\')
-      } else {
-        _path = _path.replace(/\\/g, '/')
-      }
-      return fs.chmodSync(_path, mode)
-    },
-    writeFileSync (_path, content) {
-      if (process.platform === 'win32') {
-        _path = _path.replace(/\//g, '\\')
-      } else {
-        _path = _path.replace(/\\/g, '/')
-      }
-      return fs.writeFileSync(_path, content)
-    },
-  },
   which,
-  os: {
-    ...require('os'),
-    tmpdir: () => tmpdir,
+  path: {
+    dirname,
+    resolve,
   },
 })
 
@@ -73,64 +45,51 @@ if (isWindows) {
     })
 
     t.test('simple script', (t) => {
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script "quoted parameter"; second command',
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c',
+        'script "quoted parameter"; second command',
+      ], 'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: 'C:\\Temp\\path\\package.json',
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script',
+          npm_lifecycle_script: 'script "quoted parameter"; second command',
           npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `@echo off\nscript "quoted parameter"; second command`)
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
 
     t.test('event with invalid characters runs', (t) => {
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event<:>\x03', // everything after the word "event" is invalid
         path: 'path',
         cmd: 'script "quoted parameter"; second command',
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      // disabling no-control-regex because we are testing specifically if the control
-      // character gets removed
-      // eslint-disable-next-line no-control-regex
-      t.match(args, ['/d', '/s', '/c', /(?:\\|\/)[^<:>\x03]+.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c',
+        'script "quoted parameter"; second command',
+      ], 'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
-          npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script',
+          npm_package_json: 'C:\\Temp\\path\\package.json',
+          npm_lifecycle_event: 'event<:>\x03',
+          npm_lifecycle_script: 'script "quoted parameter"; second command',
           npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `@echo off\nscript "quoted parameter"; second command`)
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -142,37 +101,30 @@ if (isWindows) {
         whichPaths.delete('blrorp')
         delete process.env.ComSpec
       })
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script "quoted parameter"; second command',
       })
       t.equal(shell, 'blrorp', 'used ComSpec as default shell')
-      t.match(args, [/\.sh$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['-c', '--', 'script "quoted parameter"; second command'],
+        'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: 'C:\\Temp\\path\\package.json',
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script',
+          npm_lifecycle_script: 'script "quoted parameter"; second command',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
-      let filename = unescapeSh(args[args.length - 1])
-      if (process.platform === 'win32') {
-        filename = filename.replace(/^\/([A-z])/, '$1:')
-      }
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
-
       t.end()
     })
 
     t.test('with cmd.exe as scriptShell', (t) => {
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script',
@@ -180,10 +132,12 @@ if (isWindows) {
         scriptShell: 'cmd.exe',
       })
       t.equal(shell, 'cmd.exe', 'kept cmd.exe')
-      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c',
+        'script ^"\\^"quoted^ parameter\\^";^" ^"second^ command^"',
+      ], 'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: 'C:\\Temp\\path\\package.json',
           npm_lifecycle_event: 'event',
           npm_lifecycle_script: 'script',
         },
@@ -191,11 +145,6 @@ if (isWindows) {
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -204,17 +153,19 @@ if (isWindows) {
       whichPaths.set('script', '/path/script.exe')
       t.teardown(() => whichPaths.delete('script'))
 
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script',
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c',
+        'script ^"\\^"quoted^ parameter\\^";^" ^"second^ command^"',
+      ], 'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: 'C:\\Temp\\path\\package.json',
           npm_lifecycle_event: 'event',
           npm_lifecycle_script: 'script',
           npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
@@ -223,13 +174,6 @@ if (isWindows) {
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `@echo off\nscript ^"\\^"quoted^ parameter\\^";^" ^"second^ command^"`)
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -238,17 +182,19 @@ if (isWindows) {
       whichPaths.set('script', '/path/script.cmd')
       t.teardown(() => whichPaths.delete('script'))
 
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script',
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c',
+        'script ^^^"\\^^^"quoted^^^ parameter\\^^^";^^^" ^^^"second^^^ command^^^"',
+      ], 'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: 'C:\\Temp\\path\\package.json',
           npm_lifecycle_event: 'event',
           npm_lifecycle_script: 'script',
           npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
@@ -257,16 +203,6 @@ if (isWindows) {
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, [
-        '@echo off',
-        `script ^^^"\\^^^"quoted^^^ parameter\\^^^";^^^" ^^^"second^^^ command^^^"`,
-      ].join('\n'))
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -277,36 +213,27 @@ if (isWindows) {
       whichPaths.set('"my script"', '/path/script.cmd')
       t.teardown(() => whichPaths.delete('my script'))
 
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: '"my script"',
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'cmd', 'default shell applies')
-      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c',
+        '"my script" ^^^"\\^^^"quoted^^^ parameter\\^^^";^^^" ^^^"second^^^ command^^^"',
+      ], 'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: 'C:\\Temp\\path\\package.json',
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script',
+          npm_lifecycle_script: '"my script"',
           npm_config_node_gyp: require.resolve('node-gyp/bin/node-gyp.js'),
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, [
-        '@echo off',
-        // eslint-disable-next-line max-len
-        `"my script" ^^^"\\^^^"quoted^^^ parameter\\^^^";^^^" ^^^"second^^^ command^^^"`,
-      ].join('\n'))
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -321,17 +248,18 @@ if (isWindows) {
     })
 
     t.test('simple script', (t) => {
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script',
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'sh', 'defaults to sh')
-      t.match(args, [/\.sh$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['-c', '--', `script '"quoted parameter";' 'second command'`],
+        'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: '/tmp/path/package.json',
           npm_lifecycle_event: 'event',
           npm_lifecycle_script: 'script',
         },
@@ -340,44 +268,29 @@ if (isWindows) {
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
 
-      const filename = unescapeSh(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `script '"quoted parameter";' 'second command'`)
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
-
       t.end()
     })
 
     t.test('event with invalid characters runs', (t) => {
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event<:>/\x04',
         path: 'path',
         cmd: 'script',
         args: ['"quoted parameter";', 'second command'],
       })
       t.equal(shell, 'sh', 'defaults to sh')
-      // no-control-regex disabled because we're specifically testing control chars
-      // eslint-disable-next-line no-control-regex
-      t.match(args, [/(?:\\|\/)[^<:>/\x04]+\.sh$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['-c', '--', `script '"quoted parameter";' 'second command'`],
+        'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
-          npm_lifecycle_event: 'event',
+          npm_package_json: '/tmp/path/package.json',
+          npm_lifecycle_event: 'event<:>/\x04',
           npm_lifecycle_script: 'script',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: undefined,
       }, 'got expected options')
-
-      const filename = unescapeSh(args[args.length - 1])
-      const contents = fs.readFileSync(filename, { encoding: 'utf8' })
-      t.equal(contents, `script '"quoted parameter";' 'second command'`)
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
@@ -385,29 +298,25 @@ if (isWindows) {
     t.test('can use cmd.exe', (t) => {
       // test that we can explicitly run in cmd.exe, even on posix systems
       // relevant for running under WSL
-      const [shell, args, opts, cleanup] = makeSpawnArgs({
+      const [shell, args, opts] = makeSpawnArgs({
         event: 'event',
         path: 'path',
         cmd: 'script "quoted parameter"; second command',
         scriptShell: 'cmd.exe',
       })
       t.equal(shell, 'cmd.exe', 'kept cmd.exe')
-      t.match(args, ['/d', '/s', '/c', /\.cmd\^"$/], 'got expected args')
-      t.match(opts, {
+      t.strictSame(args, ['/d', '/s', '/c', 'script "quoted parameter"; second command'],
+        'got expected args')
+      t.hasStrict(opts, {
         env: {
-          npm_package_json: /package\.json$/,
+          npm_package_json: '/tmp/path/package.json',
           npm_lifecycle_event: 'event',
-          npm_lifecycle_script: 'script',
+          npm_lifecycle_script: 'script "quoted parameter"; second command',
         },
         stdio: undefined,
         cwd: 'path',
         windowsVerbatimArguments: true,
       }, 'got expected options')
-
-      const filename = unescapeCmd(args[args.length - 1])
-      t.ok(fs.existsSync(filename), 'script file was written')
-      cleanup()
-      t.not(fs.existsSync(filename), 'cleanup removes script file')
 
       t.end()
     })
