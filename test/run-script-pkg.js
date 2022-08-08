@@ -239,6 +239,7 @@ t.test('do the banner with no pkgid', t => {
     },
     stdio: 'inherit',
     cmd: 'bar',
+    args: ['baz', 'buzz'],
     pkg: {
       scripts: {},
     },
@@ -247,19 +248,19 @@ t.test('do the banner with no pkgid', t => {
     event: 'foo',
     path: 'path',
     scriptShell: 'sh',
-    args: [],
     binPaths: false,
     env: {
       environ: 'value',
     },
     stdio: 'inherit',
     cmd: 'bar',
+    args: ['baz', 'buzz'],
   }, {
     event: 'foo',
     script: 'bar',
     path: 'path',
     pkgid: undefined,
-  }])).then(() => t.strictSame(logs, [['\n> foo\n> bar\n']]))
+  }])).then(() => t.strictSame(logs, [['\n> foo\n> bar baz buzz\n']]))
 })
 
 t.test('pkg has foo script', t => runScriptPkg({
