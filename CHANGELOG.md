@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.1](https://github.com/npm/run-script/compare/v4.2.0...v4.2.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* add arguments back to the logged banner ([#102](https://github.com/npm/run-script/issues/102)) ([8e08311](https://github.com/npm/run-script/commit/8e08311358a9f7c361e191b728eaada53eba607b))
+* remove the temp file entirely ([#98](https://github.com/npm/run-script/issues/98)) ([82ef491](https://github.com/npm/run-script/commit/82ef49184eb494175582f2f4d6f359519b09edfb))
+
 ## [4.2.0](https://github.com/npm/run-script/compare/v4.1.7...v4.2.0) (2022-08-01)
 
 
