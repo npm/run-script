@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.0.0](https://github.com/npm/run-script/compare/v4.2.1...v5.0.0) (2022-10-14)
+
+### ⚠️ BREAKING CHANGES
+
+* `@npmcli/run-script` is now compatible with the following semver range for node: `^14.17.0 || ^16.13.0 || >=18.0.0`
+
+### Features
+
+* [`891cb2a`](https://github.com/npm/run-script/commit/891cb2af4b65d23db28acfae62d028faaef6bddd) [#113](https://github.com/npm/run-script/pull/113) postinstall for dependabot template-oss PR (@lukekarrys)
+
+### Dependencies
+
+* [`d41405e`](https://github.com/npm/run-script/commit/d41405ea56350581f11378160e4b03a42ab0c393) [#121](https://github.com/npm/run-script/pull/121) bump @npmcli/node-gyp from 2.0.0 to 3.0.0 (#121)
+* [`5fc0e27`](https://github.com/npm/run-script/commit/5fc0e2737ee92a1983a251dd4c8aa1d8768f3226) [#123](https://github.com/npm/run-script/pull/123) bump @npmcli/promise-spawn from 3.0.0 to 4.0.0
+* [`132b84b`](https://github.com/npm/run-script/commit/132b84bbfd617d156118cb3469fa5cb3c9d7c958) [#120](https://github.com/npm/run-script/pull/120) bump read-package-json-fast from 2.0.3 to 3.0.0
+
 ## [4.2.1](https://github.com/npm/run-script/compare/v4.2.0...v4.2.1) (2022-08-09)
 
 
