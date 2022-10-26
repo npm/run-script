@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.1](https://github.com/npm/run-script/compare/v5.0.0...v5.0.1) (2022-10-26)
+
+### Dependencies
+
+* [`1bfadcb`](https://github.com/npm/run-script/commit/1bfadcb1abadf316f229f4cad5a3bb8a623fd21a) [#127](https://github.com/npm/run-script/pull/127) bump @npmcli/promise-spawn from 4.0.0 to 5.0.0 (#127)
+
 ## [5.0.0](https://github.com/npm/run-script/compare/v4.2.1...v5.0.0) (2022-10-14)
 
 ### ⚠️ BREAKING CHANGES
