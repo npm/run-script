@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@npmcli/eslint-config": "^4.0.0",
-    "@npmcli/template-oss": "4.7.1",
+    "@npmcli/template-oss": "4.8.0",
     "minipass": "^3.1.6",
     "require-inject": "^1.4.4",
     "tap": "^16.0.1"
