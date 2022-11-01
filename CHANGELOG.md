@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.1.0](https://github.com/npm/run-script/compare/v5.0.1...v5.1.0) (2022-11-01)
+
+### Features
+
+* [`45f2301`](https://github.com/npm/run-script/commit/45f2301931ba7686fa0a4b1a1d69ecc1892fdf85) let @npmcli/promise-spawn do the escaping (@nlf)
+
+### Dependencies
+
+* [`71c20af`](https://github.com/npm/run-script/commit/71c20af2e414691733ef7592baff6f11a14d8b32) [#130](https://github.com/npm/run-script/pull/130) `@npmcli/promise-spawn@6.0.0`
+
 ## [5.0.1](https://github.com/npm/run-script/compare/v5.0.0...v5.0.1) (2022-10-26)
 
 ### Dependencies
