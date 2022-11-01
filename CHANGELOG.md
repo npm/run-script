@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.1](https://github.com/npm/run-script/compare/v5.1.0...v5.1.1) (2022-11-01)
+
+### Dependencies
+
+* [`40706eb`](https://github.com/npm/run-script/commit/40706eb573f969aaa65e4ab45a21edeab39130ca) [#132](https://github.com/npm/run-script/pull/132) `which@3.0.0` (#132)
+
 ## [5.1.0](https://github.com/npm/run-script/compare/v5.0.1...v5.1.0) (2022-11-01)
 
 ### Features
