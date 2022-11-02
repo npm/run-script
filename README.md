@@ -30,9 +30,9 @@ runScript({
   // optional, defaults to /bin/sh on unix, or cmd.exe on windows
   scriptShell: '/bin/bash',
 
-  // optional, defaults to false
+  // optional, passed directly to `@npmcli/promise-spawn` which defaults it to true
   // return stdout and stderr as strings rather than buffers
-  stdioString: true,
+  stdioString: false,
 
   // optional, additional environment variables to add
   // note that process.env IS inherited by default
@@ -121,8 +121,9 @@ terminal, then it is up to the user to end it, of course.
   the result/error object.
 - `cmd` Optional.  Override the script from the `package.json` with
   something else, which will be run in an otherwise matching environment.
-- `stdioString` Optional, defaults to `false`.  Return string values for
-  `stderr` and `stdout` rather than Buffers.
+- `stdioString` Optional, passed directly to `@npmcli/promise-spawn` which
+  defaults it to `true`.  Return string values for `stderr` and `stdout` rather
+  than Buffers.
 - `banner` Optional, defaults to `true`.  If the `stdio` option is set to
   `'inherit'`, then print a banner with the package name and version, event
   name, and script command to be run.  Set explicitly to `false` to disable
