@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.0.0](https://github.com/npm/run-script/compare/v5.1.1...v6.0.0) (2022-11-02)
+
+### ⚠️ BREAKING CHANGES
+
+* `stdioString` is no longer set to `false` by default. Instead it is not set and passed directory to `@npmcli/promise-spawn` which defaults it to `true`.
+
+### Features
+
+* [`34ecf46`](https://github.com/npm/run-script/commit/34ecf46524fb8585223795ff7bb37a89f995762d) [#134](https://github.com/npm/run-script/pull/134) dont set a default for `stdioString` (@lukekarrys)
+
 ## [5.1.1](https://github.com/npm/run-script/compare/v5.1.0...v5.1.1) (2022-11-01)
 
 ### Dependencies
