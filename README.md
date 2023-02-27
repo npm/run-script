@@ -25,7 +25,7 @@ runScript({
   binPaths: [
     '/path/to/npx/node_modules/.bin',
     '/path/to/npm/prefix/node_modules/.bin',
-  ]
+  ],
 
   // optional, defaults to /bin/sh on unix, or cmd.exe on windows
   scriptShell: '/bin/bash',
