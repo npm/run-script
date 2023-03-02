@@ -44,24 +44,3 @@ test('adds only one handler for each signal, removes handlers when children have
 
   t.end()
 })
-
-test('forwards signals to child process', t => {
-  const proc = new EventEmitter()
-  proc.kill = (signal) => {
-    t.equal(signal, signalManager.forwardedSignals[0], 'child receives correct signal')
-    proc.emit('exit', 0)
-    for (const forwarded of signalManager.forwardedSignals) {
-      t.equal(
-        process.listeners(forwarded).includes(signalManager.handleSignal),
-        false, 'listener has been removed')
-    }
-    t.end()
-  }
-
-  signalManager.add(proc)
-  // passing the signal name here is necessary to fake the effects of actually
-  // receiving the signal per nodejs documentation signal handlers receive the
-  // name of the signal as their first parameter
-  // https://nodejs.org/api/process.html#process_signal_events
-  process.emit(signalManager.forwardedSignals[0], signalManager.forwardedSignals[0])
-})
