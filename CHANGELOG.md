@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.1](https://github.com/npm/run-script/compare/v6.0.0...v6.0.1) (2023-04-27)
+
+### Bug Fixes
+
+* [`3a8f085`](https://github.com/npm/run-script/commit/3a8f0854bff739653ca704d2d8cfd4e4682dcc4e) [#147](https://github.com/npm/run-script/pull/147) remove unused dependency on minipass (#147) (@nlf)
+
 ## [6.0.0](https://github.com/npm/run-script/compare/v5.1.1...v6.0.0) (2022-11-02)
 
 ### ⚠️ BREAKING CHANGES
