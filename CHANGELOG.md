@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.0.2](https://github.com/npm/run-script/compare/v6.0.1...v6.0.2) (2023-05-08)
+
+### Bug Fixes
+
+* [`545f3be`](https://github.com/npm/run-script/commit/545f3be94d412941537ad0011717933d48cb58cf) [#142](https://github.com/npm/run-script/pull/142) handle signals more correctly (#142) (@nlf)
+
+### Documentation
+
+* [`581be58`](https://github.com/npm/run-script/commit/581be58e689930cc1b832f510b971a111e27ff6a) [#141](https://github.com/npm/run-script/pull/141) fix syntax in example (#141) (@kas-elvirov)
+
 ## [6.0.1](https://github.com/npm/run-script/compare/v6.0.0...v6.0.1) (2023-04-27)
 
 ### Bug Fixes
