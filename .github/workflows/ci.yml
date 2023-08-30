@@ -8,8 +8,6 @@ on:
   push:
     branches:
       - main
-      - latest
-      - release/v*
   schedule:
     # "At 09:00 UTC (02:00 PT) on Monday" https://crontab.guru/#0_9_*_*_1
     - cron: "0 9 * * 1"
@@ -61,9 +59,7 @@ jobs:
             os: windows-latest
             shell: cmd
         node-version:
-          - 14.17.0
-          - 14.x
-          - 16.13.0
+          - 16.14.0
           - 16.x
           - 18.0.0
           - 18.x
