@@ -1,5 +1,19 @@
 # Changelog
 
+## [7.0.0](https://github.com/npm/run-script/compare/v6.0.2...v7.0.0) (2023-08-30)
+
+### ⚠️ BREAKING CHANGES
+
+* support for node 14 has been removed
+
+### Bug Fixes
+
+* [`e1b1a3c`](https://github.com/npm/run-script/commit/e1b1a3c49370f60783879de9b228cbb2c0faeb2a) [#157](https://github.com/npm/run-script/pull/157) drop node14 support (@wraithgar)
+
+### Dependencies
+
+* [`a8045a9`](https://github.com/npm/run-script/commit/a8045a9d08a5a8440f7f2b3406a3c5142fcad5d1) [#157](https://github.com/npm/run-script/pull/157) bump which from 3.0.1 to 4.0.0
+
 ## [6.0.2](https://github.com/npm/run-script/compare/v6.0.1...v6.0.2) (2023-05-08)
 
 ### Bug Fixes
