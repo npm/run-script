@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.1](https://github.com/npm/run-script/compare/v7.0.0...v7.0.1) (2023-08-30)
+
+### Dependencies
+
+* [`f61fd84`](https://github.com/npm/run-script/commit/f61fd84cd799ba22351e97f7983684d9f8b1319e) [#159](https://github.com/npm/run-script/pull/159) bump @npmcli/promise-spawn from 6.0.2 to 7.0.0
+
 ## [7.0.0](https://github.com/npm/run-script/compare/v6.0.2...v7.0.0) (2023-08-30)
 
 ### ⚠️ BREAKING CHANGES
