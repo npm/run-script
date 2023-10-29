@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.2](https://github.com/npm/run-script/compare/v7.0.1...v7.0.2) (2023-10-29)
+
+### Dependencies
+
+* [`30623cf`](https://github.com/npm/run-script/commit/30623cf3b6f119a765a9a869623715f69643ec25) [#177](https://github.com/npm/run-script/pull/177) bump node-gyp from 9.4.1 to 10.0.0
+
 ## [7.0.1](https://github.com/npm/run-script/compare/v7.0.0...v7.0.1) (2023-08-30)
 
 ### Dependencies
