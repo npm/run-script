@@ -1,5 +1,18 @@
 # Changelog
 
+## [7.0.3](https://github.com/npm/run-script/compare/v7.0.2...v7.0.3) (2024-01-03)
+
+### Bug Fixes
+
+* [`089eefb`](https://github.com/npm/run-script/commit/089eefb326d49e355ab75422d69df26b3dbb4eed) Revert Signal Handling Regression (#188) (@wiktor-obrebski)
+
+### Chores
+
+* [`8a0443b`](https://github.com/npm/run-script/commit/8a0443b73e48a3904f745490aa6dbc0e8e6a27a6) [#187](https://github.com/npm/run-script/pull/187) postinstall for dependabot template-oss PR (@lukekarrys)
+* [`ccf6eb6`](https://github.com/npm/run-script/commit/ccf6eb6e0cc12abf4315e0bb85c6866d390ccf08) [#187](https://github.com/npm/run-script/pull/187) bump @npmcli/template-oss from 4.21.1 to 4.21.3 (@dependabot[bot])
+* [`92c4354`](https://github.com/npm/run-script/commit/92c4354551be45f2d6eea801020a9804db5f8896) [#184](https://github.com/npm/run-script/pull/184) postinstall for dependabot template-oss PR (@lukekarrys)
+* [`1f5fd9a`](https://github.com/npm/run-script/commit/1f5fd9aa39b91ece997522b0c35d65cd206221a8) [#184](https://github.com/npm/run-script/pull/184) bump @npmcli/template-oss from 4.19.0 to 4.21.1 (@dependabot[bot])
+
 ## [7.0.2](https://github.com/npm/run-script/compare/v7.0.1...v7.0.2) (2023-10-29)
 
 ### Dependencies
