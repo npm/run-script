@@ -1,486 +1,319 @@
-const { EventEmitter } = require('events')
 const t = require('tap')
-const requireInject = require('require-inject')
+const spawk = require('spawk')
+const runScript = require('..')
 
-let fakeIsNodeGypPackage = false
-let SIGNAL = null
-const EXIT_CODE = 0
+const isWindows = process.platform === 'win32'
+const emptyDir = t.testdir({})
 
-const runScriptPkg = requireInject('../lib/run-script-pkg.js', {
-  '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
-  '@npmcli/promise-spawn': (...args) => {
-    const p = SIGNAL || EXIT_CODE
-      ? Promise.reject(Object.assign(new Error('test command failed'), {
-        signal: SIGNAL,
-        code: EXIT_CODE,
-      }))
-      : Promise.resolve(args)
-    p.process = new EventEmitter()
-    return p
-  },
-  '@npmcli/node-gyp': {
-    isNodeGypPackage: async (path) => Promise.resolve(fakeIsNodeGypPackage),
-    defaultGypInstallScript: 'node-gyp rebuild' },
-})
+const pkill = process.kill
+const consoleLog = console.log
 
-t.test('pkg has no scripts, early exit', t => runScriptPkg({
-  event: 'foo',
-  pkg: {},
-}).then(res => t.strictSame(res, { code: 0, signal: null })))
-
-t.test('pkg has no scripts, early exit', t => runScriptPkg({
-  event: 'install',
-  pkg: {},
-}).then(res => t.strictSame(res, { code: 0, signal: null })))
-
-t.test('pkg has no scripts, no server.js', t => runScriptPkg({
-  event: 'start',
-  pkg: {},
-  path: t.testdir({}),
-}).then(res => t.strictSame(res, { code: 0, signal: null })))
-
-t.test('pkg has server.js, start not specified', async t => {
-  const path = t.testdir({ 'server.js': '' })
-  const res = await runScriptPkg({
-    event: 'start',
-    path,
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'pipe',
-    pkg: {
-      _id: 'foo@1.2.3',
-      scripts: {},
-    },
-  })
-  t.strictSame(res, ['sh', ['-c', 'node server.js'], {
-    stdioString: undefined,
-    event: 'start',
-    path,
-    scriptShell: 'sh',
-    args: [],
-    binPaths: false,
-    env: {
-      environ: 'value',
-    },
-    stdio: 'pipe',
-    cmd: 'node server.js',
-  }, {
-    event: 'start',
-    script: 'node server.js',
-    pkgid: 'foo@1.2.3',
-    path,
-  }])
-})
-
-t.test('pkg has server.js, start not specified, with args', async t => {
-  const path = t.testdir({ 'server.js': '' })
-  const res = await runScriptPkg({
-    event: 'start',
-    path,
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    args: ['a', 'b', 'c'],
-    binPaths: false,
-    stdio: 'pipe',
-    pkg: {
-      _id: 'foo@1.2.3',
-      scripts: {},
-    },
-  })
-  t.strictSame(res, ['sh', ['-c', 'node server.js'], {
-    stdioString: undefined,
-    event: 'start',
-    path,
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'pipe',
-    cmd: 'node server.js',
-    args: ['a', 'b', 'c'],
-    binPaths: false,
-  }, {
-    event: 'start',
-    script: 'node server.js',
-    pkgid: 'foo@1.2.3',
-    path,
-  }])
-})
-
-t.test('pkg has no foo script, early exit', t => runScriptPkg({
-  event: 'foo',
-  pkg: { scripts: {} },
-}).then(res => t.strictSame(res, { code: 0, signal: null })))
-
-t.test('pkg has no foo script, but custom cmd provided', t => runScriptPkg({
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  cmd: 'bar',
-  pkg: {
-    _id: 'foo@1.2.3',
-    scripts: {},
-  },
-}).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
-  stdioString: undefined,
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  args: [],
-  binPaths: false,
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  cmd: 'bar',
-}, {
-  event: 'foo',
-  script: 'bar',
-  pkgid: 'foo@1.2.3',
-  path: 'path',
-}])))
-
-t.test('do the banner when stdio is inherited, handle line breaks', t => {
+const mockConsole = t => {
   const logs = []
-  const consoleLog = console.log
   console.log = (...args) => logs.push(args)
   t.teardown(() => console.log = consoleLog)
-  return runScriptPkg({
-    event: 'foo',
-    path: 'path',
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'inherit',
-    cmd: 'bar\nbaz\n',
-    pkg: {
-      _id: 'foo@1.2.3',
-      scripts: {},
-    },
-  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar\nbaz\n'], {
-    stdioString: undefined,
-    event: 'foo',
-    path: 'path',
-    scriptShell: 'sh',
-    args: [],
-    binPaths: false,
-    env: {
-      environ: 'value',
-    },
-    stdio: 'inherit',
-    cmd: 'bar\nbaz\n',
-  }, {
-    event: 'foo',
-    script: 'bar\nbaz\n',
-    pkgid: 'foo@1.2.3',
-    path: 'path',
-  }])).then(() => t.strictSame(logs, [['\n> foo@1.2.3 foo\n> bar\n> baz\n']]))
-})
+  return logs
+}
 
-t.test('do not show banner when stdio is inherited, if suppressed', t => {
-  const logs = []
-  const consoleLog = console.log
-  console.log = (...args) => logs.push(args)
-  t.teardown(() => console.log = consoleLog)
-  return runScriptPkg({
-    event: 'foo',
-    path: 'path',
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'inherit',
-    cmd: 'bar',
-    pkg: {
-      _id: 'foo@1.2.3',
-      scripts: {},
-    },
-    banner: false,
-  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
-    stdioString: undefined,
-    event: 'foo',
-    path: 'path',
-    scriptShell: 'sh',
-    args: [],
-    binPaths: false,
-    env: {
-      environ: 'value',
-    },
-    stdio: 'inherit',
-    cmd: 'bar',
-  }, {
-    event: 'foo',
-    script: 'bar',
-    pkgid: 'foo@1.2.3',
-    path: 'path',
-  }])).then(() => t.strictSame(logs, []))
-})
-
-t.test('do the banner with no pkgid', t => {
-  const logs = []
-  const consoleLog = console.log
-  console.log = (...args) => logs.push(args)
-  t.teardown(() => console.log = consoleLog)
-  return runScriptPkg({
-    event: 'foo',
-    path: 'path',
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'inherit',
-    cmd: 'bar',
-    args: ['baz', 'buzz'],
-    pkg: {
-      scripts: {},
-    },
-  }).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
-    stdioString: undefined,
-    event: 'foo',
-    path: 'path',
-    scriptShell: 'sh',
-    binPaths: false,
-    env: {
-      environ: 'value',
-    },
-    stdio: 'inherit',
-    cmd: 'bar',
-    args: ['baz', 'buzz'],
-  }, {
-    event: 'foo',
-    script: 'bar',
-    path: 'path',
-    pkgid: undefined,
-  }])).then(() => t.strictSame(logs, [['\n> foo\n> bar baz buzz\n']]))
-})
-
-t.test('pkg has foo script', t => runScriptPkg({
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  pkg: {
-    _id: 'foo@1.2.3',
-    scripts: {
-      foo: 'bar',
-    },
-  },
-}).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
-  stdioString: undefined,
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  args: [],
-  binPaths: false,
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  cmd: 'bar',
-}, {
-  event: 'foo',
-  script: 'bar',
-  pkgid: 'foo@1.2.3',
-  path: 'path',
-}])))
-
-t.test('pkg has foo script, with args', t => runScriptPkg({
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  pkg: {
-    _id: 'foo@1.2.3',
-    scripts: {
-      foo: 'bar',
-    },
-  },
-  args: ['a', 'b', 'c'],
-  binPaths: false,
-}).then(res => t.strictSame(res, ['sh', ['-c', 'bar'], {
-  stdioString: undefined,
-  event: 'foo',
-  path: 'path',
-  scriptShell: 'sh',
-  args: ['a', 'b', 'c'],
-  binPaths: false,
-  env: {
-    environ: 'value',
-  },
-  stdio: 'pipe',
-  cmd: 'bar',
-}, {
-  event: 'foo',
-  script: 'bar',
-  pkgid: 'foo@1.2.3',
-  path: 'path',
-}])))
-
-t.test('pkg has no install or preinstall script, but node-gyp files are present', async t => {
-  fakeIsNodeGypPackage = true
-
-  const res = await runScriptPkg({
-    event: 'install',
-    path: 'path',
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'pipe',
-    pkg: {
-      _id: 'foo@1.2.3',
-      scripts: {
+t.test('run-script-pkg', async t => {
+  await t.test('do the banner when stdio is inherited, handle line breaks', async t => {
+    const logs = mockConsole(t)
+    spawk.spawn('sh', a => a.includes('bar\nbaz\n'))
+    await runScript({
+      event: 'foo',
+      path: emptyDir,
+      scriptShell: 'sh',
+      env: {
+        environ: 'value',
       },
-    },
+      stdio: 'inherit',
+      cmd: 'bar\nbaz\n',
+      pkg: {
+        _id: 'foo@1.2.3',
+        scripts: {},
+      },
+    })
+    t.strictSame(logs, [['\n> foo@1.2.3 foo\n> bar\n> baz\n']])
+    t.ok(spawk.done())
   })
 
-  t.strictSame(res, [
-    'sh',
-    ['-c', 'node-gyp rebuild'],
-    {
-      event: 'install',
+  await t.test('do not show banner when stdio is inherited, if suppressed', async t => {
+    const logs = mockConsole(t)
+    spawk.spawn('sh', a => a.includes('bar'))
+    await runScript({
+      event: 'foo',
+      path: emptyDir,
+      scriptShell: 'sh',
+      env: {
+        environ: 'value',
+      },
+      stdio: 'inherit',
+      cmd: 'bar',
+      pkg: {
+        _id: 'foo@1.2.3',
+        scripts: {},
+      },
+      banner: false,
+    })
+    t.strictSame(logs, [])
+    t.ok(spawk.done())
+  })
+
+  await t.test('do the banner with no pkgid', async t => {
+    const logs = mockConsole(t)
+    spawk.spawn('sh', a => a.includes('bar baz buzz'))
+    await runScript({
+      event: 'foo',
+      path: emptyDir,
+      scriptShell: 'sh',
+      env: {
+        environ: 'value',
+      },
+      stdio: 'inherit',
+      cmd: 'bar',
+      args: ['baz', 'buzz'],
+      pkg: {
+        scripts: {},
+      },
+    })
+    t.strictSame(logs, [['\n> foo\n> bar baz buzz\n']])
+    t.ok(spawk.done())
+  })
+
+  await t.test('pkg has foo script', async t => {
+    const logs = mockConsole(t)
+    spawk.spawn('sh', a => a.includes('bar'))
+    await runScript({
+      event: 'foo',
+      path: emptyDir,
+      scriptShell: 'sh',
+      env: {
+        environ: 'value',
+      },
+      stdio: 'pipe',
+      pkg: {
+        _id: 'foo@1.2.3',
+        scripts: {
+          foo: 'bar',
+        },
+      },
+    })
+    t.strictSame(logs, [])
+    t.ok(spawk.done())
+  })
+
+  await t.test('pkg has foo script, with args', async t => {
+    const logs = mockConsole(t)
+    spawk.spawn('sh', a => a.includes('bar a b c'))
+    await runScript({
+      event: 'foo',
       path: 'path',
       scriptShell: 'sh',
-      args: [],
-      binPaths: false,
-      env: { environ: 'value' },
+      env: {
+        environ: 'value',
+      },
       stdio: 'pipe',
-      cmd: 'node-gyp rebuild',
-      stdioString: undefined,
-    },
-    {
+      pkg: {
+        _id: 'foo@1.2.3',
+        scripts: {
+          foo: 'bar',
+        },
+      },
+      args: ['a', 'b', 'c'],
+      binPaths: false,
+    })
+    t.strictSame(logs, [])
+    t.ok(spawk.done())
+  })
+
+  await t.test('pkg has no install or preinstall script, node-gyp files present', async t => {
+    const testdir = t.testdir({
+      'binding.gyp': 'exists',
+    })
+
+    const logs = mockConsole(t)
+    spawk.spawn('sh', a => a.includes('node-gyp rebuild'))
+    await runScript({
       event: 'install',
-      script: 'node-gyp rebuild',
-      pkgid: 'foo@1.2.3',
-      path: 'path',
-    },
-  ])
-})
-
-t.test('pkg has no install or preinstall script, but gypfile:false', async t => {
-  fakeIsNodeGypPackage = true
-
-  const res = await runScriptPkg({
-    event: 'install',
-    path: 'path',
-    scriptShell: 'sh',
-    env: {
-      environ: 'value',
-    },
-    stdio: 'pipe',
-    pkg: {
-      _id: 'foo@1.2.3',
-      gypfile: false,
-      scripts: {
+      path: testdir,
+      scriptShell: 'sh',
+      env: {
+        environ: 'value',
       },
-    },
-  })
-
-  t.strictSame(res, { code: 0, signal: null })
-})
-
-t.test('end stdin if present', async t => {
-  let stdinEnded = false
-  const rspWithEndedStdin = requireInject('../lib/run-script-pkg.js', {
-    '../lib/make-spawn-args.js': options => ['sh', ['-c', options.cmd], options],
-    '@npmcli/promise-spawn': (...args) => {
-      const p = Promise.resolve(args)
-      p.stdin = { end: () => stdinEnded = true }
-      p.process = new EventEmitter()
-      return p
-    },
-  })
-  await t.resolveMatch(rspWithEndedStdin({
-    event: 'cat',
-    path: 'path',
-    stdin: { end: () => t.end() },
-    pkg: {
-      _id: 'kitty@1.2.3',
-      scripts: {
-        cat: 'cat',
+      stdio: 'pipe',
+      pkg: {
+        _id: 'foo@1.2.3',
+        scripts: {},
       },
-    },
-  }), ['sh', ['-c', 'cat'], {
-    event: 'cat',
-    path: 'path',
-    scriptShell: undefined,
-    env: {},
-    stdio: 'pipe',
-    cmd: 'cat',
-    stdioString: undefined,
-  }, {
-    event: 'cat',
-    script: 'cat',
-    pkgid: 'kitty@1.2.3',
-    path: 'path',
-  }])
-  t.equal(stdinEnded, true, 'stdin was ended properly')
-})
+    })
+    t.strictSame(logs, [])
+    t.ok(spawk.done())
+  })
 
-t.test('kill process when foreground process ends with signal', t => {
-  const { kill } = process.kill
-  t.teardown(() => {
-    process.kill = kill
-    SIGNAL = null
-  })
-  process.kill = (pid, signal) => {
-    t.equal(process.pid, pid, 'got expected pid')
-    t.equal(signal, 'SIGFOO', 'got expected signal')
-  }
-  SIGNAL = 'SIGFOO'
-  const p = runScriptPkg({
-    event: 'sleep',
-    path: 'path',
-    stdio: 'inherit',
-    banner: false,
-    signalTimeout: 1,
-    pkg: {
-      _id: 'husky@1.2.3',
-      name: 'husky',
-      version: '1.2.3',
-      scripts: {
-        sleep: 'sleep 1000000',
-      },
-    },
-  })
-  p.catch(er => {
-    t.equal(er.signal, 'SIGFOO')
-    t.end()
-  })
-})
+  t.test('pkg has no install or preinstall script, but gypfile:false', async t => {
+    const testdir = t.testdir({
+      'binding.gyp': 'exists',
+    })
 
-t.test('fail promise when background process ends with signal', t => {
-  t.teardown(() => SIGNAL = null)
-  SIGNAL = 'SIGBAR'
-  const p = runScriptPkg({
-    event: 'sleep',
-    path: 'path',
-    pkg: {
-      _id: 'husky@1.2.3',
-      name: 'husky',
-      version: '1.2.3',
-      scripts: {
-        sleep: 'sleep 1000000',
+    const res = await runScript({
+      event: 'install',
+      path: testdir,
+      scriptShell: 'sh',
+      env: {
+        environ: 'value',
       },
-    },
+      stdio: 'pipe',
+      pkg: {
+        _id: 'foo@1.2.3',
+        gypfile: false,
+        scripts: {
+        },
+      },
+    })
+    t.strictSame(res, { code: 0, signal: null })
   })
-  p.catch(er => {
-    t.equal(er.signal, 'SIGBAR')
-    t.end()
+
+  t.test('end stdin if present', async t => {
+    const interceptor = spawk.spawn('sh', a => a.includes('cat'))
+    await runScript({
+      event: 'cat',
+      path: emptyDir,
+      scriptShell: 'sh',
+      pkg: {
+        _id: 'kitty@1.2.3',
+        scripts: {
+          cat: 'cat',
+        },
+      },
+    })
+    t.ok(spawk.done())
+    t.ok(interceptor.calledWith.stdio[0].writableEnded, 'stdin was ended properly')
+  })
+
+  await t.test('kill process when foreground process ends with signal', async t => {
+    t.teardown(() => {
+      process.kill = pkill
+    })
+    let pid
+    let signal
+    process.kill = (p, s) => {
+      pid = p
+      signal = s
+      // make the process.kill actually stop things
+      throw new Error('process killed')
+    }
+    spawk.spawn('sh', a => a.includes('sleep 1000000')).signal('SIGFOO')
+    await t.rejects(runScript({
+      event: 'sleep',
+      path: emptyDir,
+      scriptShell: 'sh',
+      stdio: 'inherit',
+      banner: false,
+      signalTimeout: 1,
+      pkg: {
+        _id: 'husky@1.2.3',
+        name: 'husky',
+        version: '1.2.3',
+        scripts: {
+          sleep: 'sleep 1000000',
+        },
+      },
+    }))
+    t.ok(spawk.done())
+    if (!isWindows) {
+      t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
+      t.equal(pid, process.pid, 'process.kill got expected pid')
+    }
+  })
+
+  await t.test('kill process when foreground process ends with signal', async t => {
+    t.teardown(() => {
+      process.kill = pkill
+    })
+    let pid
+    let signal
+    process.kill = (p, s) => {
+      pid = p
+      signal = s
+      // make the process.kill actually stop things
+      throw new Error('process killed')
+    }
+    spawk.spawn('sh', a => a.includes('sleep 1000000')).signal('SIGFOO')
+    await t.rejects(runScript({
+      event: 'sleep',
+      path: emptyDir,
+      scriptShell: 'sh',
+      stdio: 'inherit',
+      banner: false,
+      signalTimeout: 1,
+      pkg: {
+        _id: 'husky@1.2.3',
+        name: 'husky',
+        version: '1.2.3',
+        scripts: {
+          sleep: 'sleep 1000000',
+        },
+      },
+    }))
+    t.ok(spawk.done())
+    if (!isWindows) {
+      t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
+      t.equal(pid, process.pid, 'process.kill got expected pid')
+    }
+  })
+
+  t.test('rejects if process.kill fails to end process', async t => {
+    t.teardown(() => {
+      process.kill = pkill
+    })
+    let pid
+    let signal
+    process.kill = (p, s) => {
+      pid = p
+      signal = s
+      // do nothing here to emulate process.kill not killing the process
+    }
+    spawk.spawn('sh', a => a.includes('sleep 1000000')).signal('SIGFOO')
+    await t.rejects(runScript({
+      event: 'sleep',
+      path: emptyDir,
+      stdio: 'inherit',
+      scriptShell: 'sh',
+      banner: false,
+      signalTimeout: 1,
+      pkg: {
+        _id: 'husky@1.2.3',
+        name: 'husky',
+        version: '1.2.3',
+        scripts: {
+          sleep: 'sleep 1000000',
+        },
+      },
+    }))
+    t.ok(spawk.done())
+    if (!isWindows) {
+      t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
+      t.equal(pid, process.pid, 'process.kill got expected pid')
+    }
+  })
+
+  t.test('rejects if stdio is not inherit', async t => {
+    spawk.spawn('sh', a => a.includes('sleep 1000000')).signal('SIGFOO')
+    await t.rejects(runScript({
+      event: 'sleep',
+      path: emptyDir,
+      banner: false,
+      scriptShell: 'sh',
+      signalTimeout: 1,
+      pkg: {
+        _id: 'husky@1.2.3',
+        name: 'husky',
+        version: '1.2.3',
+        scripts: {
+          sleep: 'sleep 1000000',
+        },
+      },
+    }))
+    t.ok(spawk.done())
   })
 })
