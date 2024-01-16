@@ -27,7 +27,9 @@ t.strictSame(packageEnvs({}, {
   npm_package_config_zero: '0',
   npm_package_config_false: '',
   npm_package_config_nested_object_is_included: 'true',
-  npm_package_engines: 'array\n\nof\n\nstrings',
+  npm_package_engines_0: 'array',
+  npm_package_engines_1: 'of',
+  npm_package_engines_2: 'strings',
   npm_package_bin_foo: './bar.js',
   npm_package_bin_bar: '',
 })
