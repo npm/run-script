@@ -39,7 +39,8 @@ t.test('spawn args', async t => {
           e.env.npm_package_config_test_null === '' &&
           e.env.npm_package_config_test_false === '' &&
           e.env.npm_package_config_test_string === pkg.config.test_string &&
-          e.env.npm_package_config_test_array === pkg.config.test_array.join('\n\n') &&
+          e.env.npm_package_config_test_array_0 === pkg.config.test_array[0] &&
+          e.env.npm_package_config_test_array_1 === pkg.config.test_array[1] &&
           e.env.npm_package_bin === pkg.bin &&
           e.env.npm_package_engines_npm === pkg.engines.npm &&
           e.env.npm_package_engines_node === pkg.engines.node &&
