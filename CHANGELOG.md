@@ -1,5 +1,26 @@
 # Changelog
 
+## [7.0.4](https://github.com/npm/run-script/compare/v7.0.3...v7.0.4) (2024-01-22)
+
+### Bug Fixes
+
+* [`7ebc853`](https://github.com/npm/run-script/commit/7ebc853232245260d24172cf781e12225edb7b6c) [#194](https://github.com/npm/run-script/pull/194) envs: revert behavior of array in npm config (#194) (@wraithgar, @siemhesda)
+* [`bf5f419`](https://github.com/npm/run-script/commit/bf5f41939cf996a6e5f1082b5200d63aba1b3650) [#192](https://github.com/npm/run-script/pull/192) code formatting (@wraithgar)
+* [`b6f7f93`](https://github.com/npm/run-script/commit/b6f7f93e981d1a384280147065ed2389359a0c06) [#192](https://github.com/npm/run-script/pull/192) remove unreachable code path (@wraithgar)
+* [`865d556`](https://github.com/npm/run-script/commit/865d556dd8c87e815b841f3e6ac7884181a483e3) [#192](https://github.com/npm/run-script/pull/192) remove is-windows test fixture code from module (@wraithgar)
+* [`c47a91a`](https://github.com/npm/run-script/commit/c47a91a58a07dcaaa7ab87fba81b661db5ba5b7b) [#192](https://github.com/npm/run-script/pull/192) update code to use @npmcli/run-script (@wraithgar)
+
+### Dependencies
+
+* [`648b0ed`](https://github.com/npm/run-script/commit/648b0edfd1eef32d99c317459715d3fc076377c2) [#192](https://github.com/npm/run-script/pull/192) remove read-package-json-fast
+* [`04a4600`](https://github.com/npm/run-script/commit/04a4600458909d7d69c797267aea8fcec5363fe7) [#192](https://github.com/npm/run-script/pull/192) add `@npmcli/package-json@5.0.0`
+
+### Chores
+
+* [`155c434`](https://github.com/npm/run-script/commit/155c4340716e1c573c0030b46f02107ff2a2110a) [#192](https://github.com/npm/run-script/pull/192) rewrite tests (@wraithgar)
+* [`64a3503`](https://github.com/npm/run-script/commit/64a35038acd2a5b28fe3a17e49bf2b0d5eeb4c23) [#192](https://github.com/npm/run-script/pull/192) add spawk (@wraithgar)
+* [`b47b660`](https://github.com/npm/run-script/commit/b47b6601d26ae8b94ef670965e710f5c27265bdd) [#192](https://github.com/npm/run-script/pull/192) remove require-inject (@wraithgar)
+
 ## [7.0.3](https://github.com/npm/run-script/compare/v7.0.2...v7.0.3) (2024-01-03)
 
 ### Bug Fixes
