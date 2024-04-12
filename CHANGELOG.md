@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.0.0](https://github.com/npm/run-script/compare/v7.0.4...v8.0.0) (2024-04-12)
+
+### ⚠️ BREAKING CHANGES
+
+* The existing banner is now emitted using `proc-log` instead of `console.log`.  It is always emitted. Consuming libraries can decide under which situations to show the banner.
+
+### Features
+
+* [`5f9cbcf`](https://github.com/npm/run-script/commit/5f9cbcf46ac724864d38c652676beafa5854c609) [#198](https://github.com/npm/run-script/pull/198) output using proc-log (@wraithgar)
+
+### Dependencies
+
+* [`021758b`](https://github.com/npm/run-script/commit/021758b8cae6ef638055ca2e3a611348c627e7de) [#198](https://github.com/npm/run-script/pull/198) `proc-log@4.0.0`
+
 ## [7.0.4](https://github.com/npm/run-script/compare/v7.0.3...v7.0.4) (2024-01-22)
 
 ### Bug Fixes
