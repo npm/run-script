@@ -57,8 +57,6 @@ runScript({
   // print the package id and script, and the command to be run, like:
   // > somepackage@1.2.3 postinstall
   // > make all-the-things
-  // Defaults true when stdio:'inherit', otherwise suppressed
-  banner: true,
 })
   .then(({ code, signal, stdout, stderr, pkgid, path, event, script }) => {
     // do something with the results
@@ -99,6 +97,11 @@ terminal, then it is up to the user to end it, of course.
 - `event` Lifecycle event being run
 - `script` Command being run
 
+If stdio is `inherit` this package will emit a banner with the package
+name and version, event name, and script command to be run, and send it
+to [`proc-log.output.standard`](https://npm.im/proc-log).  Consuming
+libraries can decide whether or not to display this.
+
 ### Options
 
 - `path` Required.  The path to the package having its script run.
@@ -124,10 +127,6 @@ terminal, then it is up to the user to end it, of course.
 - `stdioString` Optional, passed directly to `@npmcli/promise-spawn` which
   defaults it to `true`.  Return string values for `stderr` and `stdout` rather
   than Buffers.
-- `banner` Optional, defaults to `true`.  If the `stdio` option is set to
-  `'inherit'`, then print a banner with the package name and version, event
-  name, and script command to be run.  Set explicitly to `false` to disable
-  for inherited stdio.
 
 Note that this does _not_ run pre-event and post-event scripts.  The
 caller has to manage that process themselves.

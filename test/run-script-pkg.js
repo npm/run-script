@@ -6,18 +6,19 @@ const isWindows = process.platform === 'win32'
 const emptyDir = t.testdir({})
 
 const pkill = process.kill
-const consoleLog = console.log
 
-const mockConsole = t => {
-  const logs = []
-  console.log = (...args) => logs.push(args)
-  t.teardown(() => console.log = consoleLog)
-  return logs
+const output = []
+const appendOutput = (level, ...args) => {
+  if (level === 'standard') {
+    output.push([...args])
+  }
 }
+process.on('output', appendOutput)
+t.afterEach(() => output.length = 0)
+t.teardown(() => process.removeListener('output', appendOutput))
 
 t.test('run-script-pkg', async t => {
-  await t.test('do the banner when stdio is inherited, handle line breaks', async t => {
-    const logs = mockConsole(t)
+  await t.test('stdio inherit no args and a pkgid', async t => {
     spawk.spawn('sh', a => a.includes('bar\nbaz\n'))
     await runScript({
       event: 'foo',
@@ -33,34 +34,11 @@ t.test('run-script-pkg', async t => {
         scripts: {},
       },
     })
-    t.strictSame(logs, [['\n> foo@1.2.3 foo\n> bar\n> baz\n']])
+    t.strictSame(output, [['\n> foo@1.2.3 foo\n> bar\n> baz\n']])
     t.ok(spawk.done())
   })
 
-  await t.test('do not show banner when stdio is inherited, if suppressed', async t => {
-    const logs = mockConsole(t)
-    spawk.spawn('sh', a => a.includes('bar'))
-    await runScript({
-      event: 'foo',
-      path: emptyDir,
-      scriptShell: 'sh',
-      env: {
-        environ: 'value',
-      },
-      stdio: 'inherit',
-      cmd: 'bar',
-      pkg: {
-        _id: 'foo@1.2.3',
-        scripts: {},
-      },
-      banner: false,
-    })
-    t.strictSame(logs, [])
-    t.ok(spawk.done())
-  })
-
-  await t.test('do the banner with no pkgid', async t => {
-    const logs = mockConsole(t)
+  await t.test('stdio inherit args and no pkgid', async t => {
     spawk.spawn('sh', a => a.includes('bar baz buzz'))
     await runScript({
       event: 'foo',
@@ -76,12 +54,11 @@ t.test('run-script-pkg', async t => {
         scripts: {},
       },
     })
-    t.strictSame(logs, [['\n> foo\n> bar baz buzz\n']])
+    t.strictSame(output, [['\n> foo\n> bar baz buzz\n']])
     t.ok(spawk.done())
   })
 
-  await t.test('pkg has foo script', async t => {
-    const logs = mockConsole(t)
+  await t.test('pkg has foo script, with stdio pipe', async t => {
     spawk.spawn('sh', a => a.includes('bar'))
     await runScript({
       event: 'foo',
@@ -98,12 +75,11 @@ t.test('run-script-pkg', async t => {
         },
       },
     })
-    t.strictSame(logs, [])
+    t.strictSame(output, [])
     t.ok(spawk.done())
   })
 
-  await t.test('pkg has foo script, with args', async t => {
-    const logs = mockConsole(t)
+  await t.test('pkg has foo script, with stdio pipe and args', async t => {
     spawk.spawn('sh', a => a.includes('bar a b c'))
     await runScript({
       event: 'foo',
@@ -122,16 +98,16 @@ t.test('run-script-pkg', async t => {
       args: ['a', 'b', 'c'],
       binPaths: false,
     })
-    t.strictSame(logs, [])
+    t.strictSame(output, [])
     t.ok(spawk.done())
   })
 
-  await t.test('pkg has no install or preinstall script, node-gyp files present', async t => {
+  /* eslint-disable-next-line max-len */
+  await t.test('pkg has no install or preinstall script, node-gyp files present, stdio pipe', async t => {
     const testdir = t.testdir({
       'binding.gyp': 'exists',
     })
 
-    const logs = mockConsole(t)
     spawk.spawn('sh', a => a.includes('node-gyp rebuild'))
     await runScript({
       event: 'install',
@@ -146,11 +122,11 @@ t.test('run-script-pkg', async t => {
         scripts: {},
       },
     })
-    t.strictSame(logs, [])
+    t.strictSame(output, [])
     t.ok(spawk.done())
   })
 
-  t.test('pkg has no install or preinstall script, but gypfile:false', async t => {
+  t.test('pkg has no install or preinstall script, but gypfile:false, stdio pipe', async t => {
     const testdir = t.testdir({
       'binding.gyp': 'exists',
     })
@@ -170,6 +146,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     })
+    t.strictSame(output, [])
     t.strictSame(res, { code: 0, signal: null })
   })
 
@@ -190,7 +167,7 @@ t.test('run-script-pkg', async t => {
     t.ok(interceptor.calledWith.stdio[0].writableEnded, 'stdin was ended properly')
   })
 
-  await t.test('kill process when foreground process ends with signal', async t => {
+  await t.test('kill process when foreground process ends with signal, stdio inherit', async t => {
     t.teardown(() => {
       process.kill = pkill
     })
@@ -219,6 +196,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
+    t.strictSame(output, [['\n> husky@1.2.3 sleep\n> sleep 1000000\n']])
     t.ok(spawk.done())
     if (!isWindows) {
       t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
@@ -226,7 +204,7 @@ t.test('run-script-pkg', async t => {
     }
   })
 
-  await t.test('kill process when foreground process ends with signal', async t => {
+  await t.test('kill process when foreground process ends with signal, stdio inherit', async t => {
     t.teardown(() => {
       process.kill = pkill
     })
@@ -255,6 +233,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
+    t.strictSame(output, [['\n> husky@1.2.3 sleep\n> sleep 1000000\n']])
     t.ok(spawk.done())
     if (!isWindows) {
       t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
@@ -262,7 +241,7 @@ t.test('run-script-pkg', async t => {
     }
   })
 
-  t.test('rejects if process.kill fails to end process', async t => {
+  t.test('rejects if process.kill fails to end process, stdio inherit', async t => {
     t.teardown(() => {
       process.kill = pkill
     })
@@ -290,6 +269,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
+    t.strictSame(output, [['\n> husky@1.2.3 sleep\n> sleep 1000000\n']])
     t.ok(spawk.done())
     if (!isWindows) {
       t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
@@ -314,6 +294,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
+    t.strictSame(output, [])
     t.ok(spawk.done())
   })
 })
