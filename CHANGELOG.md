@@ -1,5 +1,16 @@
 # Changelog
 
+## [8.1.0](https://github.com/npm/run-script/compare/v8.0.0...v8.1.0) (2024-04-29)
+
+### Features
+
+* [`afb3db4`](https://github.com/npm/run-script/commit/afb3db417f8fa84bc67b4db99cf6320308c2aceb) [#202](https://github.com/npm/run-script/pull/202) call input start/end around spawned process (#202) (@lukekarrys)
+
+### Chores
+
+* [`8417f1b`](https://github.com/npm/run-script/commit/8417f1bbc20a245160e4bb395d535556eaec63de) [#200](https://github.com/npm/run-script/pull/200) postinstall for dependabot template-oss PR (@lukekarrys)
+* [`5d16957`](https://github.com/npm/run-script/commit/5d16957c874c9441aa3a67c47275c8d89fced74e) [#200](https://github.com/npm/run-script/pull/200) bump @npmcli/template-oss from 4.21.3 to 4.21.4 (@dependabot[bot])
+
 ## [8.0.0](https://github.com/npm/run-script/compare/v7.0.4...v8.0.0) (2024-04-12)
 
 ### ⚠️ BREAKING CHANGES
