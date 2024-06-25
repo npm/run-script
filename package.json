@@ -18,7 +18,7 @@
     "@npmcli/eslint-config": "^4.0.0",
     "@npmcli/template-oss": "4.22.0",
     "spawk": "^1.8.1",
-    "tap": "^16.0.1"
+    "tap": "^20.0.0"
   },
   "dependencies": {
     "@npmcli/node-gyp": "^3.0.0",
