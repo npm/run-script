@@ -23,7 +23,7 @@
   "dependencies": {
     "@npmcli/node-gyp": "^3.0.0",
     "@npmcli/package-json": "^5.0.0",
-    "@npmcli/promise-spawn": "^7.0.0",
+    "@npmcli/promise-spawn": "^8.0.0",
     "node-gyp": "^10.0.0",
     "proc-log": "^4.0.0",
     "which": "^4.0.0"
