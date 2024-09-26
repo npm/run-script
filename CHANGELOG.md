@@ -1,5 +1,21 @@
 # Changelog
 
+## [9.0.0](https://github.com/npm/run-script/compare/v8.1.0...v9.0.0) (2024-09-26)
+### ⚠️ BREAKING CHANGES
+* `@npmcli/run-script` now supports node `^18.17.0 || >=20.5.0`
+### Bug Fixes
+* [`7ff5e68`](https://github.com/npm/run-script/commit/7ff5e68ee0343ac880b8537e945671ba234c8721) [#218](https://github.com/npm/run-script/pull/218) align to npm 10 node engine range (@reggi)
+### Dependencies
+* [`585d1ef`](https://github.com/npm/run-script/commit/585d1ef2aa35940f61606da4bf4050e201087f4e) [#218](https://github.com/npm/run-script/pull/218) `proc-log@5.0.0`
+* [`bfc5bf1`](https://github.com/npm/run-script/commit/bfc5bf1b9b2cc8facd162e1d4198da9bd00daffb) [#218](https://github.com/npm/run-script/pull/218) `@npmcli/promise-spawn@8.0.0`
+* [`26da68c`](https://github.com/npm/run-script/commit/26da68c76e9356a4f19a9a19f3a1f628b5d87c20) [#218](https://github.com/npm/run-script/pull/218) `@npmcli/node-gyp@4.0.0`
+### Chores
+* [`e49feef`](https://github.com/npm/run-script/commit/e49feefaf8d8f3d5f1f3e8c06a54acb7719dcd45) [#218](https://github.com/npm/run-script/pull/218) run template-oss-apply (@reggi)
+* [`1755bf8`](https://github.com/npm/run-script/commit/1755bf8296951143482586d7d42d34c185c40518) [#213](https://github.com/npm/run-script/pull/213) bump @npmcli/eslint-config from 4.0.5 to 5.0.0 (@dependabot[bot])
+* [`97e60c5`](https://github.com/npm/run-script/commit/97e60c59c24fb69582f6256c51562f48f78adec6) [#203](https://github.com/npm/run-script/pull/203) bump @npmcli/template-oss to 4.22.0 (@lukekarrys)
+* [`27bf80f`](https://github.com/npm/run-script/commit/27bf80ffb66b493918d3559ad55f92785331a96b) [#214](https://github.com/npm/run-script/pull/214) postinstall for dependabot template-oss PR (@hashtagchris)
+* [`8ad1a6c`](https://github.com/npm/run-script/commit/8ad1a6ce29d6f5f63d7e206e4257df5efe1de0c7) [#214](https://github.com/npm/run-script/pull/214) bump @npmcli/template-oss from 4.23.1 to 4.23.3 (@dependabot[bot])
+
 ## [8.1.0](https://github.com/npm/run-script/compare/v8.0.0...v8.1.0) (2024-04-29)
 
 ### Features
