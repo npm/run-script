@@ -1,5 +1,10 @@
 # Changelog
 
+## [9.0.1](https://github.com/npm/run-script/compare/v9.0.0...v9.0.1) (2024-10-02)
+### Dependencies
+* [`f0e3923`](https://github.com/npm/run-script/commit/f0e39230aa0721501af2a87984195bcbdfcb33d3) [#223](https://github.com/npm/run-script/pull/223) bump `which@5.0.0`
+* [`1dabced`](https://github.com/npm/run-script/commit/1dabced17c3a2c4cbd55fc24c085882de6445a1c) [#223](https://github.com/npm/run-script/pull/223) bump `@npmcli/package-json@6.0.0`
+
 ## [9.0.0](https://github.com/npm/run-script/compare/v8.1.0...v9.0.0) (2024-09-26)
 ### ⚠️ BREAKING CHANGES
 * `@npmcli/run-script` now supports node `^18.17.0 || >=20.5.0`
