@@ -1,5 +1,11 @@
 # Changelog
 
+## [9.0.2](https://github.com/npm/run-script/compare/v9.0.1...v9.0.2) (2024-12-04)
+### Dependencies
+* [`74f7e7a`](https://github.com/npm/run-script/commit/74f7e7a87252099fdcb5f516f846061cb9731139) [#227](https://github.com/npm/run-script/pull/227) `node-gyp@11.0.0` (#227)
+### Chores
+* [`2107147`](https://github.com/npm/run-script/commit/2107147541c533cd93f89c2c6cec02996d7e0d39) [#226](https://github.com/npm/run-script/pull/226) bump @npmcli/template-oss from 4.23.3 to 4.23.4 (#226) (@dependabot[bot], @npm-cli-bot)
+
 ## [9.0.1](https://github.com/npm/run-script/compare/v9.0.0...v9.0.1) (2024-10-02)
 ### Dependencies
 * [`f0e3923`](https://github.com/npm/run-script/commit/f0e39230aa0721501af2a87984195bcbdfcb33d3) [#223](https://github.com/npm/run-script/pull/223) bump `which@5.0.0`
