@@ -1,5 +1,11 @@
 # Changelog
 
+## [9.1.0](https://github.com/npm/run-script/compare/v9.0.2...v9.1.0) (2025-03-07)
+### Features
+* [`21694f2`](https://github.com/npm/run-script/commit/21694f2098d27f3391a137a8885d20b34363faed) [#230](https://github.com/npm/run-script/pull/230) use nodeGyp option (#230) (@wraithgar, @legobeat)
+### Chores
+* [`fea1ba3`](https://github.com/npm/run-script/commit/fea1ba381afd9ff695ade023634a16024ffdc1d9) [#229](https://github.com/npm/run-script/pull/229) bump @npmcli/template-oss from 4.23.4 to 4.23.5 (#229) (@dependabot[bot], @npm-cli-bot)
+
 ## [9.0.2](https://github.com/npm/run-script/compare/v9.0.1...v9.0.2) (2024-12-04)
 ### Dependencies
 * [`74f7e7a`](https://github.com/npm/run-script/commit/74f7e7a87252099fdcb5f516f846061cb9731139) [#227](https://github.com/npm/run-script/pull/227) `node-gyp@11.0.0` (#227)
