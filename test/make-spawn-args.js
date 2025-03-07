@@ -62,15 +62,34 @@ t.test('spawn args', async t => {
       /.*/,
       a => a.includes('echo test'),
       e => {
-        return e.env.test_fixture === 'a string'
+        return e.env.test_fixture === 'a string' &&
+          e.env.npm_config_node_gyp === '/test/path.js'
       }
     )
     await t.resolves(() => runScript({
       pkg,
       path: testdir,
       env: {
+        npm_config_node_gyp: '/test/path.js',
         test_fixture: 'a string',
       },
+      event: 'test',
+    }))
+    t.ok(spawk.done())
+  })
+
+  await t.test('provided options.nodeGyp', async t => {
+    spawk.spawn(
+      /.*/,
+      a => a.includes('echo test'),
+      e => {
+        return e.env.npm_config_node_gyp === '/test/path.js'
+      }
+    )
+    await t.resolves(() => runScript({
+      pkg,
+      path: testdir,
+      nodeGyp: '/test/path.js',
       event: 'test',
     }))
     t.ok(spawk.done())
