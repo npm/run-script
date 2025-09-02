@@ -1,5 +1,16 @@
 # Changelog
 
+## [10.0.0](https://github.com/npm/run-script/compare/v9.1.0...v10.0.0) (2025-09-02)
+### ⚠️ BREAKING CHANGES
+* `run-script` now supports node `^20.17.0 || >=22.9.0`
+### Bug Fixes
+* [`e0eea71`](https://github.com/npm/run-script/commit/e0eea718b01bb92b590cbe6fbd31fda1198426bc) [#239](https://github.com/npm/run-script/pull/239) align to npm 11 node engine range (@owlstronaut)
+### Dependencies
+* [`fb8aed9`](https://github.com/npm/run-script/commit/fb8aed98895ffc8b3a476a92695a941981992c2e) [#239](https://github.com/npm/run-script/pull/239) `@npmcli/package-json@7.0.0`
+### Chores
+* [`795e49e`](https://github.com/npm/run-script/commit/795e49e5571789efc4c4ebf3f5975ec9267bdc6d) [#234](https://github.com/npm/run-script/pull/234) postinstall workflow updates (#234) (@owlstronaut)
+* [`0d78e0c`](https://github.com/npm/run-script/commit/0d78e0c688b1985617218a19a02eb4cec29f6bda) [#236](https://github.com/npm/run-script/pull/236) bump @npmcli/template-oss from 4.24.4 to 4.25.0 (#236) (@dependabot[bot], @npm-cli-bot)
+
 ## [9.1.0](https://github.com/npm/run-script/compare/v9.0.2...v9.1.0) (2025-03-07)
 ### Features
 * [`21694f2`](https://github.com/npm/run-script/commit/21694f2098d27f3391a137a8885d20b34363faed) [#230](https://github.com/npm/run-script/pull/230) use nodeGyp option (#230) (@wraithgar, @legobeat)
