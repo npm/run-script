@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.1](https://github.com/npm/run-script/compare/v10.0.0...v10.0.1) (2025-10-23)
+### Dependencies
+* [`796de97`](https://github.com/npm/run-script/commit/796de9728dafebe3830ec63ca0c91f4533c48f74) [#245](https://github.com/npm/run-script/pull/245) bump @npmcli/node-gyp from 4.0.0 to 5.0.0 (#245) (@dependabot[bot])
+* [`a35bc34`](https://github.com/npm/run-script/commit/a35bc34f700477f49eea8c91e25bbe1683c937e0) [#244](https://github.com/npm/run-script/pull/244) bump proc-log from 5.0.0 to 6.0.0 (#244) (@dependabot[bot])
+### Chores
+* [`7ce2c09`](https://github.com/npm/run-script/commit/7ce2c09a1e6e480b2aa7c99482efe6070ac849c6) [#243](https://github.com/npm/run-script/pull/243) bump @npmcli/template-oss from 4.26.0 to 4.27.1 (#243) (@dependabot[bot], @npm-cli-bot)
+
 ## [10.0.0](https://github.com/npm/run-script/compare/v9.1.0...v10.0.0) (2025-09-02)
 ### ⚠️ BREAKING CHANGES
 * `run-script` now supports node `^20.17.0 || >=22.9.0`
