@@ -1,5 +1,11 @@
 # Changelog
 
+## [10.0.2](https://github.com/npm/run-script/compare/v10.0.1...v10.0.2) (2025-10-24)
+### Dependencies
+* [`1709ff7`](https://github.com/npm/run-script/commit/1709ff7a135fea50c7e8fb7ec8cccdedcf184bd0) [#247](https://github.com/npm/run-script/pull/247) bump @npmcli/promise-spawn from 8.0.3 to 9.0.0 (#247) (@dependabot[bot])
+### Chores
+* [`1ae56c0`](https://github.com/npm/run-script/commit/1ae56c05d475fbbceaa677fc0cb3455da2086384) [#248](https://github.com/npm/run-script/pull/248) bump @npmcli/eslint-config from 5.1.0 to 6.0.0 (#248) (@dependabot[bot])
+
 ## [10.0.1](https://github.com/npm/run-script/compare/v10.0.0...v10.0.1) (2025-10-23)
 ### Dependencies
 * [`796de97`](https://github.com/npm/run-script/commit/796de9728dafebe3830ec63ca0c91f4533c48f74) [#245](https://github.com/npm/run-script/pull/245) bump @npmcli/node-gyp from 4.0.0 to 5.0.0 (#245) (@dependabot[bot])
