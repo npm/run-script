@@ -1,5 +1,12 @@
 # Changelog
 
+## [10.0.3](https://github.com/npm/run-script/compare/v10.0.2...v10.0.3) (2025-11-13)
+### Dependencies
+* [`5d563f2`](https://github.com/npm/run-script/commit/5d563f22c686e88dce3144afa09b7ca814b7e611) [#253](https://github.com/npm/run-script/pull/253) bump node-gyp from 11.5.0 to 12.1.0 (#253) (@dependabot[bot])
+* [`870617f`](https://github.com/npm/run-script/commit/870617f54dbb45fc8a3ab6cf7d09c86a64e1c1e0) [#252](https://github.com/npm/run-script/pull/252) bump which from 5.0.0 to 6.0.0 (#252) (@dependabot[bot])
+### Chores
+* [`459b0d4`](https://github.com/npm/run-script/commit/459b0d42fddfc7253ca2770ba36641268437365a) [#250](https://github.com/npm/run-script/pull/250) bump @npmcli/template-oss from 4.27.1 to 4.28.0 (#250) (@dependabot[bot], @npm-cli-bot)
+
 ## [10.0.2](https://github.com/npm/run-script/compare/v10.0.1...v10.0.2) (2025-10-24)
 ### Dependencies
 * [`1709ff7`](https://github.com/npm/run-script/commit/1709ff7a135fea50c7e8fb7ec8cccdedcf184bd0) [#247](https://github.com/npm/run-script/pull/247) bump @npmcli/promise-spawn from 8.0.3 to 9.0.0 (#247) (@dependabot[bot])
