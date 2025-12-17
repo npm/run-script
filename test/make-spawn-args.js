@@ -1,4 +1,6 @@
-const t = require('tap')
+const { describe, it, before } = require('node:test')
+const assert = require('node:assert')
+const testdirFn = require('./fixtures/testdir.js')
 const spawk = require('spawk')
 const runScript = require('..')
 
@@ -22,9 +24,12 @@ const pkg = {
   },
 }
 
-t.test('spawn args', async t => {
-  const testdir = t.testdir({})
-  await t.test('defaults', async t => {
+describe('spawn args', (t) => {
+  let testdir
+  before(() => {
+    testdir = testdirFn(t, {})
+  })
+  it('defaults', async () => {
     spawk.spawn(
       /.*/,
       a => a.includes('echo test'),
@@ -49,15 +54,15 @@ t.test('spawn args', async t => {
           e.env.npm_config_node_gyp === require.resolve('node-gyp/bin/node-gyp.js')
       }
     )
-    await t.resolves(() => runScript({
+    await runScript({
       pkg,
       path: testdir,
       event: 'test',
-    }))
-    t.ok(spawk.done())
+    })
+    assert.ok(spawk.done())
   })
 
-  await t.test('provided env', async t => {
+  it('provided env', async () => {
     spawk.spawn(
       /.*/,
       a => a.includes('echo test'),
@@ -66,7 +71,7 @@ t.test('spawn args', async t => {
           e.env.npm_config_node_gyp === '/test/path.js'
       }
     )
-    await t.resolves(() => runScript({
+    await runScript({
       pkg,
       path: testdir,
       env: {
@@ -74,11 +79,11 @@ t.test('spawn args', async t => {
         test_fixture: 'a string',
       },
       event: 'test',
-    }))
-    t.ok(spawk.done())
+    })
+    assert.ok(spawk.done())
   })
 
-  await t.test('provided options.nodeGyp', async t => {
+  it('provided options.nodeGyp', async () => {
     spawk.spawn(
       /.*/,
       a => a.includes('echo test'),
@@ -86,30 +91,30 @@ t.test('spawn args', async t => {
         return e.env.npm_config_node_gyp === '/test/path.js'
       }
     )
-    await t.resolves(() => runScript({
+    await runScript({
       pkg,
       path: testdir,
       nodeGyp: '/test/path.js',
       event: 'test',
-    }))
-    t.ok(spawk.done())
+    })
+    assert.ok(spawk.done())
   })
 
-  await t.test('provided args', async t => {
+  it('provided args', async () => {
     spawk.spawn(
       /.*/,
       a => a.find(arg => arg.includes('echo test') && arg.includes('argtest'))
     )
-    await t.resolves(() => runScript({
+    await runScript({
       pkg,
       path: testdir,
       args: ['argtest'],
       event: 'test',
-    }))
-    t.ok(spawk.done())
+    })
+    assert.ok(spawk.done())
   })
 
-  t.test('event with invalid characters', async t => {
+  it('event with invalid characters', async () => {
     spawk.spawn(
       /.*/,
       a => a.includes('echo weird'),
@@ -118,27 +123,27 @@ t.test('spawn args', async t => {
           e.env.npm_lifecycle_script === 'echo weird'
       }
     )
-    await t.resolves(() => runScript({
+    await runScript({
       pkg,
       path: testdir,
       event: 'weird<x>\x04',
-    }))
-    t.ok(spawk.done())
+    })
+    assert.ok(spawk.done())
   })
 
-  await t.test('provided binPaths', async t => {
+  it('provided binPaths', async () => {
     spawk.spawn(
       /.*/,
       false,
       e => (e.env.PATH || e.env.Path).startsWith('/tmp/test-fixture/binpath')
     )
-    await t.resolves(() => runScript({
+    await runScript({
       pkg,
       binPaths: ['/tmp/test-fixture/binpath'],
       path: testdir,
       args: ['test arg'],
       event: 'test',
-    }))
-    t.ok(spawk.done())
+    })
+    assert.ok(spawk.done())
   })
 })

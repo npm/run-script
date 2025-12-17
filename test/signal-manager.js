@@ -1,21 +1,22 @@
 const { EventEmitter } = require('events')
-const { test } = require('tap')
+const { it } = require('node:test')
+const assert = require('node:assert')
 
 const signalManager = require('../lib/signal-manager')
 
-test('adds only one handler for each signal, removes handlers when children have exited', t => {
+it('adds only one handler for each signal, removes handlers when children have exited', () => {
   const procOne = new EventEmitter()
   const procTwo = new EventEmitter()
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(
+    assert.strictEqual(
       process.listeners(signal).includes(signalManager.handleSignal),
       false, 'does not have a listener yet')
   }
   signalManager.add(procOne)
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(
+    assert.strictEqual(
       process.listeners(signal).includes(signalManager.handleSignal),
       true, 'has a listener for forwarded signals')
   }
@@ -23,13 +24,13 @@ test('adds only one handler for each signal, removes handlers when children have
   signalManager.add(procTwo)
   for (const signal of signalManager.forwardedSignals) {
     const handlers = process.listeners(signal).filter((fn) => fn === signalManager.handleSignal)
-    t.equal(handlers.length, 1, 'only has one handler')
+    assert.strictEqual(handlers.length, 1, 'only has one handler')
   }
 
   procOne.emit('exit', 0)
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(
+    assert.strictEqual(
       process.listeners(signal).includes(signalManager.handleSignal),
       true, 'did not remove listeners yet')
   }
@@ -37,25 +38,22 @@ test('adds only one handler for each signal, removes handlers when children have
   procTwo.emit('exit', 0)
 
   for (const signal of signalManager.forwardedSignals) {
-    t.equal(
+    assert.strictEqual(
       process.listeners(signal).includes(signalManager.handleSignal),
       false, 'listener has been removed')
   }
-
-  t.end()
 })
 
-test('forwards signals to child process', t => {
+it('forwards signals to child process', () => {
   const proc = new EventEmitter()
   proc.kill = (signal) => {
-    t.equal(signal, signalManager.forwardedSignals[0], 'child receives correct signal')
+    assert.strictEqual(signal, signalManager.forwardedSignals[0], 'child receives correct signal')
     proc.emit('exit', 0)
     for (const forwarded of signalManager.forwardedSignals) {
-      t.equal(
+      assert.strictEqual(
         process.listeners(forwarded).includes(signalManager.handleSignal),
         false, 'listener has been removed')
     }
-    t.end()
   }
 
   signalManager.add(proc)

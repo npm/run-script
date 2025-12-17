@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-const t = require('tap')
+const { describe, it } = require('node:test')
+const assert = require('node:assert')
 const runScript = require('..')
 
 const cases = [
@@ -17,10 +18,10 @@ const cases = [
   ['invalid cmd', { event: 'x', path: 'x', args: ['x'], cmd: 7 }, 'invalid cmd option provided to runScript'],
 ]
 
-t.test('validate options error cases', async t => {
+describe('validate options error cases', () => {
   for (const [name, options, message] of cases) {
-    await t.test(name, async t => {
-      await t.rejects(runScript(options), { name: 'TypeError', message })
+    it(name, async () => {
+      await assert.rejects(runScript(options), { name: 'TypeError', message })
     })
   }
 })
