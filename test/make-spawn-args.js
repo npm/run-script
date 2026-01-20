@@ -1,5 +1,7 @@
 const t = require('tap')
 const spawk = require('spawk')
+const { delimiter } = require('path')
+const setPATH = require('../lib/set-path.js')
 const runScript = require('..')
 
 const pkg = {
@@ -140,5 +142,41 @@ t.test('spawn args', async t => {
       event: 'test',
     }))
     t.ok(spawk.done())
+  })
+
+  await t.test('binPaths containing delimiter logs warning', async t => {
+    const warnings = []
+    const onWarn = (...args) => warnings.push(args)
+    process.on('log', onWarn)
+    t.teardown(() => process.off('log', onWarn))
+
+    spawk.spawn(
+      /.*/,
+      false,
+      e => (e.env.PATH || e.env.Path).includes(`/path/with${delimiter}delimiter`)
+    )
+    await t.resolves(() => runScript({
+      pkg,
+      binPaths: [`/path/with${delimiter}delimiter`],
+      path: testdir,
+      event: 'test',
+    }))
+    const warning = warnings.find(w => w[0] === 'warn' && w[1] === 'run-script' && w[2].includes('delimiter'))
+    t.ok(warning, 'warning should be logged when binPath contains delimiter')
+    t.match(warning[2], '"test" script')
+    t.ok(spawk.done())
+  })
+
+  await t.test('binPaths containing delimiter uses generic message without event', async t => {
+    const warnings = []
+    const onWarn = (...args) => warnings.push(args)
+    process.on('log', onWarn)
+    t.teardown(() => process.off('log', onWarn))
+
+    setPATH(testdir, [`/path/with${delimiter}delimiter`], {})
+
+    const warning = warnings.find(w => w[0] === 'warn' && w[1] === 'run-script' && w[2].includes('delimiter'))
+    t.ok(warning, 'warning should be logged with generic message when no event')
+    t.match(warning[2], 'script execution')
   })
 })
