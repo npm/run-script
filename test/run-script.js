@@ -74,9 +74,8 @@ t.test('run-script', async t => {
     t.strictSame(res, { code: 0, signal: null })
   })
 
-  await t.test('start event, pkg has server.js but no start script', async t => {
+  await t.test('start event, pkg has no start script, early exit', async t => {
     const path = t.testdir({ 'server.js': '' })
-    spawk.spawn(/.*/, a => a.includes('node server.js'))
     const res = await runScript({
       event: 'start',
       path,
@@ -85,11 +84,7 @@ t.test('run-script', async t => {
         scripts: {},
       },
     })
-    t.match(res, {
-      event: 'start',
-      script: 'node server.js',
-      pkgid: '@npmcli/run-script-test@1.2.3',
-    })
+    t.strictSame(res, { code: 0, signal: null })
   })
 
   await t.test('pkg does not have requested script, with custom cmd', async t => {
@@ -109,24 +104,5 @@ t.test('run-script', async t => {
       signal: null,
     })
     t.ok(spawk.done())
-  })
-})
-
-t.test('isServerPackage', async t => {
-  await t.test('is server package', async t => {
-    const testdir = t.testdir({
-      'server.js': '',
-    })
-    await t.resolves(runScript.isServerPackage(testdir), true)
-  })
-  await t.test('is not server package - no server.js', async t => {
-    const testdir = t.testdir({})
-    await t.resolves(runScript.isServerPackage(testdir), false)
-  })
-  await t.test('is not server package - invalid server.js', async t => {
-    const testdir = t.testdir({
-      'server.js': {},
-    })
-    await t.resolves(runScript.isServerPackage(testdir), false)
   })
 })
