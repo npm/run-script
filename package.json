@@ -1,6 +1,6 @@
 {
   "name": "@npmcli/run-script",
-  "version": "10.0.3",
+  "version": "10.0.4",
   "description": "Run a lifecycle script for a package (descendant of npm-lifecycle)",
   "author": "GitHub Inc.",
   "license": "ISC",
