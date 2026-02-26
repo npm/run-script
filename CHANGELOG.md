@@ -1,5 +1,15 @@
 # Changelog
 
+## [10.0.4](https://github.com/npm/run-script/compare/v10.0.3...v10.0.4) (2026-02-26)
+### Bug Fixes
+* [`eb64ee9`](https://github.com/npm/run-script/commit/eb64ee922a737597913714ac0d7ec1bb89353bb1) [#259](https://github.com/npm/run-script/pull/259) show a warning when a delimiter is present in the path (@MRagunandhan24)
+### Dependencies
+* [`891cddd`](https://github.com/npm/run-script/commit/891cddd31dc68756cff6f771a0d54c6d2378b8bc) [#260](https://github.com/npm/run-script/pull/260) remove which (#260)
+### Chores
+* [`cc71505`](https://github.com/npm/run-script/commit/cc71505281b194874d0072f185be7fbb891a7baf) [#259](https://github.com/npm/run-script/pull/259) template-oss-apply (@owlstronaut)
+* [`47b11aa`](https://github.com/npm/run-script/commit/47b11aadd7ce191f77820ac38ced603a28bce77d) [#258](https://github.com/npm/run-script/pull/258) postinstall for dependabot template-oss PR (@npm-cli-bot)
+* [`525dd60`](https://github.com/npm/run-script/commit/525dd60e97109184c95233b0345cb81721c63a02) [#258](https://github.com/npm/run-script/pull/258) bump @npmcli/template-oss from 4.28.1 to 4.29.0 (@dependabot[bot])
+
 ## [10.0.3](https://github.com/npm/run-script/compare/v10.0.2...v10.0.3) (2025-11-13)
 ### Dependencies
 * [`5d563f2`](https://github.com/npm/run-script/commit/5d563f22c686e88dce3144afa09b7ca814b7e611) [#253](https://github.com/npm/run-script/pull/253) bump node-gyp from 11.5.0 to 12.1.0 (#253) (@dependabot[bot])
