@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 const t = require('tap')
 const runScript = require('..')
 

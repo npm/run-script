@@ -7,17 +7,16 @@ const emptyDir = t.testdir({})
 
 const pkill = process.kill
 
-const output = []
-const appendOutput = (level, ...args) => {
-  if (level === 'standard') {
-    output.push([...args])
-  }
+const logs = []
+const logHandler = (level, ...args) => {
+  logs.push([level, ...args])
 }
-process.on('output', appendOutput)
-t.afterEach(() => output.length = 0)
-t.teardown(() => process.removeListener('output', appendOutput))
 
 t.test('run-script-pkg', async t => {
+  process.on('log', logHandler)
+  t.afterEach(() => logs.length = 0)
+  t.teardown(() => process.removeListener('log', logHandler))
+
   await t.test('stdio inherit no args and a pkgid', async t => {
     spawk.spawn('sh', a => a.includes('bar\nbaz\n'))
     await runScript({
@@ -34,7 +33,10 @@ t.test('run-script-pkg', async t => {
         scripts: {},
       },
     })
-    t.strictSame(output, [['\n> foo@1.2.3 foo\n> bar\n> baz\n']])
+    t.strictSame(logs, [
+      ['notice', 'run', 'foo@1.2.3 foo'],
+      ['notice', 'run', 'bar\nbaz'],
+    ])
     t.ok(spawk.done())
   })
 
@@ -54,7 +56,10 @@ t.test('run-script-pkg', async t => {
         scripts: {},
       },
     })
-    t.strictSame(output, [['\n> foo\n> bar baz buzz\n']])
+    t.strictSame(logs, [
+      ['notice', 'run', 'foo'],
+      ['notice', 'run', 'bar baz buzz'],
+    ])
     t.ok(spawk.done())
   })
 
@@ -75,7 +80,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     })
-    t.strictSame(output, [])
+    t.strictSame(logs, [])
     t.ok(spawk.done())
   })
 
@@ -98,11 +103,10 @@ t.test('run-script-pkg', async t => {
       args: ['a', 'b', 'c'],
       binPaths: false,
     })
-    t.strictSame(output, [])
+    t.strictSame(logs, [])
     t.ok(spawk.done())
   })
 
-  /* eslint-disable-next-line max-len */
   await t.test('pkg has no install or preinstall script, node-gyp files present, stdio pipe', async t => {
     const testdir = t.testdir({
       'binding.gyp': 'exists',
@@ -122,7 +126,7 @@ t.test('run-script-pkg', async t => {
         scripts: {},
       },
     })
-    t.strictSame(output, [])
+    t.strictSame(logs, [])
     t.ok(spawk.done())
   })
 
@@ -146,7 +150,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     })
-    t.strictSame(output, [])
+    t.strictSame(logs, [])
     t.strictSame(res, { code: 0, signal: null })
   })
 
@@ -196,7 +200,10 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
-    t.strictSame(output, [['\n> husky@1.2.3 sleep\n> sleep 1000000\n']])
+    t.strictSame(logs, [
+      ['notice', 'run', 'husky@1.2.3 sleep'],
+      ['notice', 'run', 'sleep 1000000'],
+    ])
     t.ok(spawk.done())
     if (!isWindows) {
       t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
@@ -233,7 +240,10 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
-    t.strictSame(output, [['\n> husky@1.2.3 sleep\n> sleep 1000000\n']])
+    t.strictSame(logs, [
+      ['notice', 'run', 'husky@1.2.3 sleep'],
+      ['notice', 'run', 'sleep 1000000'],
+    ])
     t.ok(spawk.done())
     if (!isWindows) {
       t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
@@ -269,7 +279,10 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
-    t.strictSame(output, [['\n> husky@1.2.3 sleep\n> sleep 1000000\n']])
+    t.strictSame(logs, [
+      ['notice', 'run', 'husky@1.2.3 sleep'],
+      ['notice', 'run', 'sleep 1000000'],
+    ])
     t.ok(spawk.done())
     if (!isWindows) {
       t.equal(signal, 'SIGFOO', 'process.kill got expected signal')
@@ -294,7 +307,7 @@ t.test('run-script-pkg', async t => {
         },
       },
     }))
-    t.strictSame(output, [])
+    t.strictSame(logs, [])
     t.ok(spawk.done())
   })
 })
