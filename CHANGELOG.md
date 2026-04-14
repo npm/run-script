@@ -1,5 +1,18 @@
 # Changelog
 
+## [11.0.0](https://github.com/npm/run-script/compare/v10.0.4...v11.0.0) (2026-04-14)
+### ⚠️ BREAKING CHANGES
+* If a package has a server.js file but no start script, it will no longer be automatically run when the start event is triggered. This change removes the implicit behavior of running server.js and requires an explicit start script to be defined in the package.json.
+* the banner that shows the command being ran has been moved to a log event
+### Features
+* [`99150de`](https://github.com/npm/run-script/commit/99150de3b2a812d19970b8a5dd5941a2c128e040) [#264](https://github.com/npm/run-script/pull/264) make banner info a log event (@wraithgar)
+### Bug Fixes
+* [`eb54826`](https://github.com/npm/run-script/commit/eb5482637b57f34578395056304c20e76135b567) [#262](https://github.com/npm/run-script/pull/262) do not auto-discover and run a server.js file on `npm start` (#262) (@owlstronaut)
+* [`babf6cc`](https://github.com/npm/run-script/commit/babf6cc3e1606317cc417e342e8658db146541ef) [#264](https://github.com/npm/run-script/pull/264) rename variable (@wraithgar)
+### Chores
+* [`8125088`](https://github.com/npm/run-script/commit/812508814782e53606dc741d561380048ea67076) [#265](https://github.com/npm/run-script/pull/265) updateNpm: false (#265) (@wraithgar)
+* [`73909c5`](https://github.com/npm/run-script/commit/73909c5b8b2a4d040a52a1ce73a5d1a70dfc0fb0) [#263](https://github.com/npm/run-script/pull/263) bump @npmcli/template-oss from 4.29.0 to 4.30.0 (#263) (@dependabot[bot], @npm-cli-bot)
+
 ## [10.0.4](https://github.com/npm/run-script/compare/v10.0.3...v10.0.4) (2026-02-26)
 ### Bug Fixes
 * [`eb64ee9`](https://github.com/npm/run-script/commit/eb64ee922a737597913714ac0d7ec1bb89353bb1) [#259](https://github.com/npm/run-script/pull/259) show a warning when a delimiter is present in the path (@MRagunandhan24)
