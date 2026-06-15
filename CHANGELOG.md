@@ -1,5 +1,31 @@
 # Changelog
 
+## [11.0.0](https://github.com/npm/run-script/compare/v10.0.4...v11.0.0) (2026-06-15)
+### ⚠️ BREAKING CHANGES
+* `@npmcli/run-script` now supports node `^22.22.2 || ^24.15.0 || >=26.0.0`
+* template-oss-apply
+* If a package has a server.js file but no start script, it will no longer be automatically run when the start event is triggered. This change removes the implicit behavior of running server.js and requires an explicit start script to be defined in the package.json.
+* the banner that shows the command being ran has been moved to a log event
+### Features
+* [`88cce50`](https://github.com/npm/run-script/commit/88cce50a0e5cc2e022e2b36a25eda84ea9e21247) [#277](https://github.com/npm/run-script/pull/277) bump to new node engine range (@owlstronaut)
+* [`2b1f2f4`](https://github.com/npm/run-script/commit/2b1f2f44caf54b83ae08bece8e996aa4bf745ada) [#277](https://github.com/npm/run-script/pull/277) template-oss-apply (@owlstronaut)
+* [`99150de`](https://github.com/npm/run-script/commit/99150de3b2a812d19970b8a5dd5941a2c128e040) [#264](https://github.com/npm/run-script/pull/264) make banner info a log event (@wraithgar)
+### Bug Fixes
+* [`eb54826`](https://github.com/npm/run-script/commit/eb5482637b57f34578395056304c20e76135b567) [#262](https://github.com/npm/run-script/pull/262) do not auto-discover and run a server.js file on `npm start` (#262) (@owlstronaut)
+* [`babf6cc`](https://github.com/npm/run-script/commit/babf6cc3e1606317cc417e342e8658db146541ef) [#264](https://github.com/npm/run-script/pull/264) rename variable (@wraithgar)
+### Dependencies
+* [`539bb6b`](https://github.com/npm/run-script/commit/539bb6b19e4e1bb3fb7708bc2eeafc637cb029b3) [#277](https://github.com/npm/run-script/pull/277) `node-gyp@13.0.0`
+* [`cbe988e`](https://github.com/npm/run-script/commit/cbe988efd2533f04e91e435c70733754965fa2d3) [#277](https://github.com/npm/run-script/pull/277) `proc-log@7.0.0`
+* [`cec9fc0`](https://github.com/npm/run-script/commit/cec9fc0b490b72c4b7cafa687307445f799e0ea0) [#277](https://github.com/npm/run-script/pull/277) `@npmcli/promise-spawn@10.0.0`
+* [`d6287df`](https://github.com/npm/run-script/commit/d6287dfa95c940b46cff962cb774042bf6c19b21) [#277](https://github.com/npm/run-script/pull/277) `@npmcli/package-json@8.0.0`
+* [`c5f38b0`](https://github.com/npm/run-script/commit/c5f38b06d69c499f372e3eec6a8ebc30f0de0bcb) [#277](https://github.com/npm/run-script/pull/277) `@npmcli/node-gyp@6.0.0`
+### Chores
+* [`f5be71c`](https://github.com/npm/run-script/commit/f5be71cc9fc0cb54f7a75f1dd3e98303c546e7e7) [#277](https://github.com/npm/run-script/pull/277) `@npmcli/eslint-config@7.0.0` (@owlstronaut)
+* [`1e839aa`](https://github.com/npm/run-script/commit/1e839aaf6ec9e84de26830a14d17f2393538748d) [#277](https://github.com/npm/run-script/pull/277) template-oss-apply (@owlstronaut)
+* [`88e6692`](https://github.com/npm/run-script/commit/88e6692d3d416faadefb37039abd56434643faf3) [#277](https://github.com/npm/run-script/pull/277) bumping @npmcli/template-oss from 4.30.0 to 5.1.0 (@owlstronaut)
+* [`8125088`](https://github.com/npm/run-script/commit/812508814782e53606dc741d561380048ea67076) [#265](https://github.com/npm/run-script/pull/265) updateNpm: false (#265) (@wraithgar)
+* [`73909c5`](https://github.com/npm/run-script/commit/73909c5b8b2a4d040a52a1ce73a5d1a70dfc0fb0) [#263](https://github.com/npm/run-script/pull/263) bump @npmcli/template-oss from 4.29.0 to 4.30.0 (#263) (@dependabot[bot], @npm-cli-bot)
+
 ## [10.0.4](https://github.com/npm/run-script/compare/v10.0.3...v10.0.4) (2026-02-26)
 ### Bug Fixes
 * [`eb64ee9`](https://github.com/npm/run-script/commit/eb64ee922a737597913714ac0d7ec1bb89353bb1) [#259](https://github.com/npm/run-script/pull/259) show a warning when a delimiter is present in the path (@MRagunandhan24)
