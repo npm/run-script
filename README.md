@@ -99,7 +99,7 @@ terminal, then it is up to the user to end it, of course.
 
 If stdio is `inherit` this package will emit a banner with the package
 name and version, event name, and script command to be run, and send it
-to [`proc-log.output.standard`](https://npm.im/proc-log).  Consuming
+to [`proc-log.log.notice`](https://npm.im/proc-log) under the `run` heading. Consuming
 libraries can decide whether or not to display this.
 
 ### Options
@@ -161,14 +161,14 @@ Functionally, this means:
 ## Escaping
 
 In order to ensure that arguments are handled consistently, this module
-writes a temporary script file containing the command as it exists in
-the package.json, followed by the user supplied arguments having been
-escaped to ensure they are processed as literal strings. We then instruct
-the shell to execute the script file, and when the process exits we remove
-the temporary file.
+passes the command from package.json and the extra arguments to
+`@npmcli/promise-spawn`. That module escapes the extra arguments for the
+selected shell, then runs the resulting command through the shell. The
+package script itself is not escaped, so shell operators in it still work.
 
 In Windows, when the shell is cmd, and when the initial command in the script
 is a known batch file (i.e. `something.cmd`) we double escape additional
 arguments so that the shim scripts npm installs work correctly.
 
-The actual implementation of the escaping is in `lib/escape.js`.
+The actual implementation of the escaping is in
+[`@npmcli/promise-spawn`'s `lib/escape.js`](https://github.com/npm/promise-spawn/blob/main/lib/escape.js).
