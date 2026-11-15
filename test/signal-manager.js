@@ -1,4 +1,6 @@
 const { EventEmitter } = require('events')
+const { spawn } = require('child_process')
+const { join } = require('path')
 const { test } = require('tap')
 
 const signalManager = require('../lib/signal-manager')
@@ -64,4 +66,41 @@ test('forwards signals to child process', t => {
   // name of the signal as their first parameter
   // https://nodejs.org/api/process.html#process_signal_events
   process.emit(signalManager.forwardedSignals[0], signalManager.forwardedSignals[0])
+})
+
+test('removes handlers when a child fails to spawn', async t => {
+  const proc = spawn(join(t.testdir({}), 'missing-command'), [], { stdio: 'ignore' })
+  const error = new Promise(resolve => proc.once('error', resolve))
+  const closed = new Promise(resolve => proc.once('close', resolve))
+  t.teardown(() => proc.emit('exit', 1))
+  signalManager.add(proc)
+
+  t.match(await error, { code: 'ENOENT' })
+  await closed
+
+  for (const signal of signalManager.forwardedSignals) {
+    t.equal(process.listeners(signal).includes(signalManager.handleSignal),
+      false, 'listener has been removed after failed spawn')
+  }
+})
+
+test('keeps forwarding signals while another child is running', t => {
+  const failedProc = new EventEmitter()
+  const runningProc = new EventEmitter()
+  t.teardown(() => failedProc.emit('exit', 1))
+  signalManager.add(failedProc)
+  signalManager.add(runningProc)
+  failedProc.emit('close', -1)
+
+  for (const signal of signalManager.forwardedSignals) {
+    t.equal(process.listeners(signal).includes(signalManager.handleSignal),
+      true, 'still has a listener for the running child')
+  }
+
+  runningProc.emit('exit', 0)
+  for (const signal of signalManager.forwardedSignals) {
+    t.equal(process.listeners(signal).includes(signalManager.handleSignal),
+      false, 'listener has been removed after the last child exits')
+  }
+  t.end()
 })
