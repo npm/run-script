@@ -1,5 +1,11 @@
 # Changelog
 
+## [11.0.1](https://github.com/npm/run-script/compare/v11.0.0...v11.0.1) (2026-11-13)
+### Dependencies
+* [`2385917`](https://github.com/npm/run-script/commit/23859172567b4959eda359f353e3ba9818b8a6c1) [#284](https://github.com/npm/run-script/pull/284) bump @npmcli/package-json from 8.0.0 to 8.0.1 (#284) (@jeffkl, @Copilot)
+### Chores
+* [`01fa56f`](https://github.com/npm/run-script/commit/01fa56fd885ab653454007f9dee6ee254f19b925) [#279](https://github.com/npm/run-script/pull/279) bump @npmcli/template-oss from 5.1.0 to 5.1.1 (#279) (@dependabot[bot], @npm-cli-bot)
+
 ## [11.0.0](https://github.com/npm/run-script/compare/v10.0.4...v11.0.0) (2026-06-15)
 ### ⚠️ BREAKING CHANGES
 * `@npmcli/run-script` now supports node `^22.22.2 || ^24.15.0 || >=26.0.0`
